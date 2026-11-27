@@ -1,56 +1,62 @@
-# Welcome to your Expo app 👋
+# Minik Atlas
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A private family journal for pregnancy and early childhood: weekly pregnancy
+view, memories with photos, growth measurements, appointments and a small
+family circle. UI is Turkish. Code and docs are English.
 
-## Get started
+**Status: prototype (P0–P2).** Runs on fictional local demo data only. There is
+no backend, no account system, no server authorization, no medical review of
+any content. See [docs/status.md](docs/status.md).
 
-1. Install dependencies
+## Run it
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Requirements: Node 20+ (tested with Node 22), npm. On a Mac, for iOS: Xcode
+simulator or the Expo Go app on a phone.
 
 ```bash
-npm run reset-project
+npm install
+npx expo start          # press i (iOS simulator), a (Android), w (web), or scan the QR with Expo Go
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+The whole prototype runs in **Expo Go** (SDK 58). The only feature that would
+need a development build, calendar export, is behind the `calendarExport`
+flag and is off.
 
-### Other setup steps
+On the welcome screen choose **"Örnek aileyle göz at"** to load the fictional
+Yıldız family, or create a new profile from scratch. Settings → "Prototip
+araçları" can simulate offline, slow network and photo upload failures, and
+reset all data.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Checks
 
-## Learn more
+```bash
+npm run typecheck       # tsc --noEmit, strict
+npm run lint            # eslint (expo config + layer import rules)
+npm test                # jest-expo unit/component tests
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Web preview checks (Chromium via Playwright; layout and logic only, not native):
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm i --no-save playwright && npx playwright install chromium   # once
+npm run export:web && npm run serve:web &                       # http://localhost:8081
+npm run journeys                                                # 12 scripted journeys
+SCALE=2 npm run screenshots -- http://localhost:8081 docs/screenshots
+```
 
-## Join the community
+## Map
 
-Join our community of developers creating universal apps.
+| Path | What lives there |
+| --- | --- |
+| `src/app` | expo-router routes only (thin screens) |
+| `src/features` | feature hooks and components (memories, pregnancy, measurements, …) |
+| `src/domain` | pure rules: dates, gestation, permissions, units, memory save logic |
+| `src/data` | `Backend` interface, demo provider, query keys, error mapping |
+| `src/ui` | design tokens and primitives |
+| `src/content` | Turkish copy, weekly content schema + demo weeks, illustrations |
+| `src/infrastructure` | env, feature flags, storage, logging, simulation |
+| `backend/supabase` | draft SQL migration (not executed) |
+| `docs` | product, architecture, rules, test strategy, change guide |
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Start with [docs/architecture.md](docs/architecture.md) and
+[docs/change-guide.md](docs/change-guide.md).

@@ -69,6 +69,8 @@ describe('export selection', () => {
     expect(result.memories.map((m) => m.id)).toEqual(['shared', 'adult-private']);
     expect(result.measurements.map((m) => m.id)).toEqual(['w1']);
     expect(result.appointments).toEqual([]);
+    const withOrigin = selectForExport(adult, { ...source, memories: [...source.memories, buildMemory({ id: 'preg-mem', subject: { kind: 'pregnancy', pregnancyId: 'p0' } }), buildMemory({ id: 'other-preg', subject: { kind: 'pregnancy', pregnancyId: 'p9' } })] }, { profile: child, originPregnancyId: 'p0', include: { memories: true, measurements: false, appointments: false } });
+    expect(withOrigin.memories.map((m) => m.id)).toEqual(['shared', 'adult-private', 'preg-mem']);
     expect(selectForExport(revoked, source, { profile: child, include: { memories: true, measurements: true, appointments: true } })).toEqual({
       memories: [],
       measurements: [],

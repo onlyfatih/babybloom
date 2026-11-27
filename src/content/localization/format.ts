@@ -44,6 +44,13 @@ export function formatMeasurement(canonical: number, unit: MeasurementUnit): str
   return `${number} ${t(`measurement.units.${unit}` as never)}`;
 }
 
+/** Localized zone name, e.g. "Europe/Istanbul" -> "Türkiye Saati". Falls back to the city part of the IANA id. */
 export function formatTimeZoneLabel(timeZone: string): string {
+  try {
+    const part = new Intl.DateTimeFormat(intlLocale(), { timeZone, timeZoneName: 'longGeneric' }).formatToParts(new Date()).find((p) => p.type === 'timeZoneName');
+    if (part?.value && !/^GMT/.test(part.value)) return part.value;
+  } catch {
+    // fall through
+  }
   return timeZone.replace(/_/g, ' ').split('/').pop() ?? timeZone;
 }

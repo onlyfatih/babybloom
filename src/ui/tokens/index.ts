@@ -24,5 +24,5 @@ export const layout = {
   screenPadding: 20,
   /** Minimum touch target (Apple HIG 44pt, Material 48dp). */
   minTouchTarget: 48,
-  tabBarHeight: 64,
+  tabBarHeight: 72,
 } as const;

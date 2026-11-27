@@ -7,6 +7,8 @@ import { Actor, canOnRecord } from './permissions';
 
 export interface ExportSelection {
   profile: ProfileRef;
+  /** For a child: the pregnancy it was born from, so its pregnancy memories are part of the export (unified journey). */
+  originPregnancyId?: string | null;
   include: { memories: boolean; measurements: boolean; appointments: boolean };
 }
 
@@ -14,6 +16,11 @@ export interface ExportSource {
   memories: Memory[];
   measurements: GrowthMeasurement[];
   appointments: Appointment[];
+}
+
+function matches(a: ProfileRef | null, selection: ExportSelection): boolean {
+  if (sameProfile(a, selection.profile)) return true;
+  return !!selection.originPregnancyId && a?.kind === 'pregnancy' && a.pregnancyId === selection.originPregnancyId;
 }
 
 function sameProfile(a: ProfileRef | null, b: ProfileRef): boolean {
@@ -25,7 +32,7 @@ function sameProfile(a: ProfileRef | null, b: ProfileRef): boolean {
 
 export function selectForExport(actor: Actor, source: ExportSource, selection: ExportSelection): ExportSource {
   const memories = selection.include.memories
-    ? source.memories.filter((m) => sameProfile(m.subject, selection.profile) && canOnRecord(actor, 'view', m))
+    ? source.memories.filter((m) => matches(m.subject, selection) && canOnRecord(actor, 'view', m))
     : [];
   const measurements =
     selection.include.measurements && selection.profile.kind === 'child'
