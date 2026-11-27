@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <!-- Plum (NHS week 12 comparison). Hand-authored SVG, Minik Atlas. Light from upper left. -->
+  <defs>
+    <radialGradient id="body" cx="0.36" cy="0.32" r="0.78">
+      <stop offset="0" stop-color="#7b4a8c"/>
+      <stop offset="0.3" stop-color="#55285f"/>
+      <stop offset="0.65" stop-color="#36123d"/>
+      <stop offset="1" stop-color="#1a0620"/>
+    </radialGradient>
+    <radialGradient id="rim" cx="0.72" cy="0.78" r="0.5">
+      <stop offset="0.55" stop-color="#b0567a" stop-opacity="0"/>
+      <stop offset="1" stop-color="#c46a86" stop-opacity="0.45"/>
+    </radialGradient>
+    <radialGradient id="spec" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3b2a22" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#3b2a22" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="stem" x1="0" x2="1">
+      <stop offset="0" stop-color="#6b5a3a"/>
+      <stop offset="0.5" stop-color="#8c7a52"/>
+      <stop offset="1" stop-color="#4d3f27"/>
+    </linearGradient>
+    <!-- waxy "bloom": fine noise, lightened, only on the lit side -->
+    <filter id="bloom" x="0" y="0" width="1" height="1">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="7" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.86  0 0 0 0 0.84  0 0 0 0 0.92  0 0 0 1.4 -0.55" result="speck"/>
+      <feGaussianBlur in="speck" stdDeviation="0.4"/>
+    </filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="soft2"><feGaussianBlur stdDeviation="2.2"/></filter>
+    <clipPath id="clip"><path id="shape" d="M162 80c-30-6-58 4-76 26-20 26-22 70-6 104 16 34 50 54 86 52 44-3 78-38 82-84 4-50-30-92-86-98z"/></clipPath>
+    <radialGradient id="bloomMask" cx="0.38" cy="0.36" r="0.62">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.9"/>
+      <stop offset="0.7" stop-color="#fff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="bm"><rect width="320" height="320" fill="url(#bloomMask)"/></mask>
+  </defs>
+
+  <ellipse cx="164" cy="266" rx="88" ry="14" fill="url(#shadow)"/>
+  <g clip-path="url(#clip)">
+    <rect width="320" height="320" fill="url(#body)"/>
+    <rect width="320" height="320" fill="url(#rim)"/>
+    <!-- suture groove: darker crease with a lit edge -->
+    <path d="M168 84c-14 34-18 72-12 112 4 26 10 46 14 64" fill="none" stroke="#14030f" stroke-width="6" stroke-linecap="round" opacity="0.45" filter="url(#soft2)"/>
+    <path d="M176 86c-12 34-15 72-9 110 4 26 9 44 13 62" fill="none" stroke="#a66796" stroke-width="3" stroke-linecap="round" opacity="0.35" filter="url(#soft2)"/>
+    <!-- bloom -->
+    <g mask="url(#bm)"><rect width="320" height="320" filter="url(#bloom)" opacity="0.28"/><rect width="320" height="320" fill="#b7b3d8" opacity="0.16"/></g>
+    <ellipse cx="200" cy="250" rx="90" ry="40" fill="#12030f" opacity="0.35" filter="url(#soft)"/>
+    <!-- soft highlight -->
+    <ellipse cx="118" cy="132" rx="30" ry="20" fill="url(#spec)" opacity="0.7" transform="rotate(-28 118 132)" filter="url(#soft2)"/>
+    <ellipse cx="110" cy="124" rx="10" ry="6" fill="#fff" opacity="0.35" transform="rotate(-28 110 124)" filter="url(#soft2)"/>
+  </g>
+  <!-- stem cavity and stem -->
+  <ellipse cx="166" cy="86" rx="16" ry="6" fill="#1e0719" opacity="0.65" filter="url(#soft2)"/>
+  <path d="M165 88c1-14 4-26 12-38" fill="none" stroke="url(#stem)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M175 52c2-2 5-3 7-2" fill="none" stroke="#3f3320" stroke-width="4" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <!-- Banana (NHS week 20 comparison). Hand-authored SVG, Minik Atlas. Light from upper left. -->
+  <defs>
+    <linearGradient id="body" x1="0.2" y1="0.15" x2="0.55" y2="0.95">
+      <stop offset="0" stop-color="#fbe58a"/>
+      <stop offset="0.35" stop-color="#f3cf4f"/>
+      <stop offset="0.7" stop-color="#d9a92a"/>
+      <stop offset="1" stop-color="#a4741a"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0.3" y1="0" x2="0.55" y2="1">
+      <stop offset="0" stop-color="#fff3b8" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#f6d860" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="stem" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8a8a3c"/>
+      <stop offset="0.6" stop-color="#6b6a2b"/>
+      <stop offset="1" stop-color="#4a3e1c"/>
+    </linearGradient>
+    <radialGradient id="shadow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3b2a22" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#3b2a22" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="soft2"><feGaussianBlur stdDeviation="1.8"/></filter>
+    <filter id="grain" x="0" y="0" width="1" height="1">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035 0.6" numOctaves="2" seed="3" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.55  0 0 0 0 0.38  0 0 0 0 0.08  0 0 0 1.2 -0.5"/>
+    </filter>
+    <!-- banana body: crescent from the blossom tip (left) to the stalk (upper right) -->
+    <clipPath id="clip"><path d="M52 176c6 30 34 64 84 74 52 10 104-8 138-50 14-18 22-38 26-58 1-6-5-9-9-5-20 22-44 42-80 54-48 16-102 8-146-20-8-5-15-2-13 5z"/></clipPath>
+  </defs>
+
+  <g transform="translate(-14 -38)">
+  <ellipse cx="176" cy="262" rx="112" ry="12" fill="url(#shadow)"/>
+  <g clip-path="url(#clip)">
+    <rect width="320" height="320" fill="url(#body)"/>
+    <rect width="320" height="320" filter="url(#grain)" opacity="0.35"/>
+    <!-- facet: lit upper face between two ridges -->
+    <path d="M58 182c40 30 92 40 142 24 34-11 64-32 90-62l2 18c-24 30-56 52-92 62-48 13-98 2-138-30z" fill="url(#face)"/>
+    <!-- ridge lines -->
+    <path d="M60 186c42 30 94 38 144 22 34-11 62-30 88-58" fill="none" stroke="#b98a1e" stroke-width="2.2" opacity="0.55" filter="url(#soft2)"/>
+    <path d="M66 210c40 22 88 26 132 12 34-11 62-30 84-56" fill="none" stroke="#9b6c14" stroke-width="2.6" opacity="0.45" filter="url(#soft2)"/>
+    <!-- underside occlusion -->
+    <path d="M60 222c34 30 86 36 132 24 36-10 70-34 96-70l10 40-170 80-90-30z" fill="#6b4410" opacity="0.38" filter="url(#soft)"/>
+    <!-- highlight along the top face -->
+    <path d="M84 192c34 18 76 22 116 10" fill="none" stroke="#fffbe0" stroke-width="5" stroke-linecap="round" opacity="0.55" filter="url(#soft2)"/>
+    <!-- a few ripening freckles -->
+    <g fill="#6d4a17" opacity="0.4" filter="url(#soft2)">
+      <ellipse cx="128" cy="226" rx="2.2" ry="1.4"/>
+      <ellipse cx="170" cy="230" rx="1.6" ry="1.1"/>
+      <ellipse cx="214" cy="214" rx="2" ry="1.3"/>
+      <ellipse cx="104" cy="214" rx="1.4" ry="1"/>
+    </g>
+    <!-- green tint near the stalk end -->
+    <path d="M248 150c20-14 34-28 48-44l8 30-40 40z" fill="#b5b54a" opacity="0.35" filter="url(#soft)"/>
+  </g>
+  <!-- blossom tip -->
+  <path d="M50 172c-3 4-3 12 2 16 4 3 10 1 11-4 1-5-2-10-7-13-2-1-4-1-6 1z" fill="#3e2a12"/>
+  <!-- stalk -->
+  <path d="M282 150c4-16 9-32 15-46 2-5 10-5 12 0 1 5 0 10-2 15-4 10-8 22-11 35z" fill="url(#stem)"/>
+  <path d="M300 104c2-3 7-4 9-1 1 2 0 4-2 5-3 2-6 0-7-4z" fill="#3e3416"/>
+  </g>
+</svg>

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <!-- Pumpkin (NHS week 40 comparison). Hand-authored SVG, Minik Atlas. Light from upper left. -->
+  <defs>
+    <radialGradient id="lobeOuter" cx="0.4" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#e0843a"/>
+      <stop offset="0.6" stop-color="#bd5c1f"/>
+      <stop offset="1" stop-color="#7d3510"/>
+    </radialGradient>
+    <radialGradient id="lobeMid" cx="0.4" cy="0.33" r="0.75">
+      <stop offset="0" stop-color="#f0a055"/>
+      <stop offset="0.55" stop-color="#d9752c"/>
+      <stop offset="1" stop-color="#94420f"/>
+    </radialGradient>
+    <radialGradient id="lobeFront" cx="0.42" cy="0.3" r="0.78">
+      <stop offset="0" stop-color="#f7b56a"/>
+      <stop offset="0.5" stop-color="#e5843a"/>
+      <stop offset="1" stop-color="#a24c14"/>
+    </radialGradient>
+    <linearGradient id="stem" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8b8452"/>
+      <stop offset="0.45" stop-color="#6f6a3c"/>
+      <stop offset="1" stop-color="#3f3a1f"/>
+    </linearGradient>
+    <radialGradient id="shadow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3b2a22" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#3b2a22" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="soft2"><feGaussianBlur stdDeviation="1.8"/></filter>
+    <filter id="grain" x="0" y="0" width="1" height="1">
+      <feTurbulence type="fractalNoise" baseFrequency="0.5 0.08" numOctaves="2" seed="11" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.45  0 0 0 0 0.2  0 0 0 0 0.05  0 0 0 1.3 -0.55"/>
+    </filter>
+    <filter id="fibre" x="0" y="0" width="1" height="1">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9 0.04" numOctaves="2" seed="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.85  0 0 0 0 0.82  0 0 0 0 0.6  0 0 0 1.6 -0.7"/>
+    </filter>
+    <clipPath id="all">
+      <ellipse cx="72" cy="194" rx="42" ry="58"/><ellipse cx="248" cy="194" rx="42" ry="58"/>
+      <ellipse cx="108" cy="190" rx="52" ry="68"/><ellipse cx="212" cy="190" rx="52" ry="68"/>
+      <ellipse cx="160" cy="188" rx="62" ry="74"/>
+    </clipPath>
+    <radialGradient id="occl" cx="0.5" cy="1" r="0.7">
+      <stop offset="0" stop-color="#3d1504" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#3d1504" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="stemClip"><path d="M148 122c2-20 4-38 2-52 0-6 4-10 10-10 8 0 16 4 20 10 4 6 2 12-2 18-6 10-8 22-8 36z"/></clipPath>
+  </defs>
+
+  <ellipse cx="160" cy="262" rx="122" ry="13" fill="url(#shadow)"/>
+  <g clip-path="url(#all)">
+    <rect width="320" height="320" fill="#6e2e0c"/>
+    <!-- lobes, back to front -->
+    <ellipse cx="72" cy="194" rx="42" ry="58" fill="url(#lobeOuter)"/>
+    <ellipse cx="248" cy="194" rx="42" ry="58" fill="url(#lobeOuter)"/>
+    <ellipse cx="108" cy="190" rx="52" ry="68" fill="url(#lobeMid)"/>
+    <ellipse cx="212" cy="190" rx="52" ry="68" fill="url(#lobeMid)"/>
+    <ellipse cx="160" cy="188" rx="62" ry="74" fill="url(#lobeFront)"/>
+    <!-- grooves -->
+    <g fill="none" stroke="#5a230a" stroke-linecap="round" opacity="0.45" filter="url(#soft2)">
+      <path d="M104 132c-6 18-8 38-8 58s3 40 9 58" stroke-width="4"/>
+      <path d="M216 132c6 18 8 38 8 58s-3 40-9 58" stroke-width="4"/>
+      <path d="M64 150c-5 14-7 28-7 44s3 30 8 44" stroke-width="3"/>
+      <path d="M256 150c5 14 7 28 7 44s-3 30-8 44" stroke-width="3"/>
+    </g>
+    <rect width="320" height="320" filter="url(#grain)" opacity="0.4"/>
+    <!-- bottom occlusion and top light -->
+    <rect x="30" y="170" width="260" height="104" fill="url(#occl)"/>
+    <ellipse cx="132" cy="150" rx="26" ry="34" fill="#ffe0b0" opacity="0.28" filter="url(#soft)"/>
+    <ellipse cx="128" cy="144" rx="7" ry="13" fill="#fff4df" opacity="0.35" filter="url(#soft2)"/>
+  </g>
+  <!-- stem well -->
+  <ellipse cx="162" cy="120" rx="24" ry="8" fill="#5a230a" opacity="0.7" filter="url(#soft2)"/>
+  <!-- stem -->
+  <g clip-path="url(#stemClip)">
+    <rect width="320" height="320" fill="url(#stem)"/>
+    <rect width="320" height="320" filter="url(#fibre)" opacity="0.35"/>
+  </g>
+  <path d="M154 68c6-6 18-6 24 2" fill="none" stroke="#2f2b16" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+</svg>

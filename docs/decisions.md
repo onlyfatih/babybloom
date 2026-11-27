@@ -38,3 +38,17 @@ than uploaded as the original.
 ## ADR-008 Demo content is gated, never "published" (accepted)
 Demo weekly entries carry `isDemo` and cannot pass the production gate.
 Content version `0.1.0-demo`.
+
+## ADR-009 Growth references enter scope, under conditions (2026-11-27, accepted by owner's request)
+Supersedes the "no percentiles" line of product-v1.md for milestone M3 only.
+Percentiles/z-scores come only from official machine-readable data after
+numerical validation, need a parent-selected reference sex, and are never
+shown as health judgements. Pregnancy size comparisons stay a separate
+domain. See milestone-visuals-growth.md.
+
+## ADR-010 Pregnancy artwork as code-authored SVG rendered to raster (proposed, awaiting approval)
+No image-generation tool is available. Artwork is hand-written SVG (gradients,
+light, procedural texture) rendered offline to PNG/WebP; the app ships rasters
+and animates them with transforms only (sway, light), so native SVG filter
+support does not matter. Alternative if the owner wants painterly realism:
+commission an illustrator from the production brief in milestone-visuals-growth.md.
