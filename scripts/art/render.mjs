@@ -1,6 +1,7 @@
 /**
  * Renders hand-authored SVG artwork (art/pregnancy/src/*.svg) to transparent
- * PNG at fixed square sizes with Chromium. Output: assets/pregnancy/<id>@<n>x.png
+ * PNG at fixed square sizes with Chromium. Output: assets/pregnancy/<id>.png
+ * (1x, the base file Metro and Jest resolve) plus <id>@2x.png and <id>@3x.png.
  *
  *   node scripts/art/render.mjs [id ...]
  *
@@ -14,18 +15,18 @@ const { chromium } = createRequire(import.meta.url)('playwright');
 
 const srcDir = 'art/pregnancy/src';
 const outDir = 'assets/pregnancy';
-const BASE = 320; // logical px; @2x = 640, @3x = 960
+const BASE = 320; // logical px; 1x = 320, @2x = 640, @3x = 960
 const ids = process.argv.slice(2);
 await mkdir(outDir, { recursive: true });
 const files = (await readdir(srcDir)).filter((f) => f.endsWith('.svg') && (!ids.length || ids.includes(basename(f, '.svg'))));
 const browser = await chromium.launch();
-for (const scale of [2, 3]) {
+for (const scale of [1, 2, 3]) {
   const page = await browser.newPage({ viewport: { width: BASE, height: BASE }, deviceScaleFactor: scale });
   for (const f of files) {
     const svg = await readFile(join(srcDir, f), 'utf8');
     await page.setContent(`<html><body style="margin:0;background:transparent">${svg.replace('<svg ', `<svg width="${BASE}" height="${BASE}" `)}</body></html>`);
-    await page.screenshot({ path: join(outDir, `${basename(f, '.svg')}@${scale}x.png`), omitBackground: true, clip: { x: 0, y: 0, width: BASE, height: BASE } });
-    console.log(`${basename(f, '.svg')}@${scale}x.png`);
+    await page.screenshot({ path: join(outDir, `${basename(f, '.svg')}${scale === 1 ? '' : `@${scale}x`}.png`), omitBackground: true, clip: { x: 0, y: 0, width: BASE, height: BASE } });
+    console.log(`${basename(f, '.svg')} @${scale}x`);
   }
   await page.close();
 }

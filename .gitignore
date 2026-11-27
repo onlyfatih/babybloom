@@ -43,3 +43,6 @@ example
 /android
 dist/
 dist-large/
+
+# Built review page (preview/artifact/build.mjs)
+preview/artifact/out/

@@ -16,4 +16,4 @@ export { Screen } from './Screen';
 export { ConfirmationSheet } from './ConfirmationSheet';
 export { ListRow, ToggleRow, Divider } from './ListRow';
 export { Fab } from './Fab';
-export { useReducedMotion } from './use-reduced-motion';
+export { useReducedMotion, useReducedMotionSetting } from './use-reduced-motion';

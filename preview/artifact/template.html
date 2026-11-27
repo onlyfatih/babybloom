@@ -1,0 +1,201 @@
+<title>Minik Atlas örnekleri</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday, tender: a calm family journal
+   IDEA the app's own screens, shown as three phones and one chart card
+   PICTURE three week heroes with the new artwork; the growth chart drawn large
+   COLOUR cream ground, forest ink, apricot and sage fields from the app tokens
+   TYPE Fraunces display + Inter text, as in the app
+   LAYOUT laptop: three phones in a row, chart card full width below; phone: stacked */
+:root{color-scheme:light dark;--bg:light-dark(#FAF7F2,#151b19);--ink:light-dark(#243B36,#e9eee9);--muted:light-dark(#5B6E68,#a9b8b2);--card:light-dark(#FFFDF9,#1e2624);--line:light-dark(#DDD5C8,#33403c);--apricot:light-dark(#FBEADD,#3a2c22);--sage:light-dark(#E8EFE8,#243230);--lav:light-dark(#E6E0F2,#2b2838);--accent:light-dark(#426B5B,#8fc3ad);--child:light-dark(#9A3D24,#f0a487);--warn:light-dark(#F8EDCF,#3a321c)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;margin:0;overflow-x:clip}
+.band{padding-block:clamp(24px,4vw,48px);padding-left:max(5vw,16px,env(safe-area-inset-left,0px));padding-right:max(5vw,16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;letter-spacing:-.02em;line-height:1.1;margin:0}
+h1{font-size:clamp(32px,4.4vw,48px)}
+h2{font-size:clamp(24px,3vw,32px)}
+.lede{color:var(--muted);max-width:68ch;margin:.6em 0 0}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between}
+.pill{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:10px 16px;font:500 15px Inter,sans-serif;min-height:44px;cursor:pointer}
+.pill[aria-pressed=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.pill:disabled{opacity:.5;cursor:not-allowed}
+.phones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:24px}
+@media(max-width:980px){.phones{grid-template-columns:minmax(0,1fr)}.phone{max-width:420px;margin:0 auto;width:100%}}
+.phone{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:18px 16px 16px;display:flex;flex-direction:column;gap:14px}
+.who{display:flex;justify-content:space-between;align-items:baseline}
+.who b{font:600 20px Fraunces,serif}
+.who span{color:var(--muted);font-size:14px}
+.hero{background:var(--apricot);border-radius:22px;padding:14px 14px 18px;position:relative;overflow:hidden}
+.week{font:600 34px/1 Fraunces,serif}.week small{font:500 16px Inter,sans-serif;color:var(--muted);margin-left:4px}
+.art{aspect-ratio:1;position:relative;margin:4px auto 0;width:min(100%,280px)}
+.art img{width:100%;height:100%;display:block;transform-origin:50% 82%}
+.sheen{position:absolute;inset:0;background:radial-gradient(circle at 30% 26%,rgba(255,255,255,.35),transparent 42%);mix-blend-mode:soft-light;pointer-events:none}
+.anim .art img{animation:sway 7s ease-in-out infinite}
+.anim .sheen{animation:light 9s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-1.2deg) translateY(0)}50%{transform:rotate(1.2deg) translateY(-3px)}}
+@keyframes light{0%,100%{opacity:.55}50%{opacity:1}}
+.paused .art img,.paused .sheen{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.anim .art img,.anim .sheen{animation:none}}
+.size{font:600 19px/1.3 Fraunces,serif;margin-top:6px}
+.meas{font-size:14px;color:var(--muted);margin-top:4px}
+.note{font-size:13px;color:var(--muted);background:var(--sage);border-radius:12px;padding:8px 10px}
+.draft{font-size:13px;background:var(--warn);border-radius:12px;padding:8px 10px}
+.sec h3{font-size:17px;margin-bottom:4px}
+.sec p{margin:0;font-size:15px}
+.add{border:1.5px dashed var(--line);border-radius:14px;padding:12px;text-align:center;color:var(--accent);font-weight:600}
+.src{font-size:13px;color:var(--muted)}.src a{color:var(--accent)}
+.nav{display:flex;gap:8px}.nav .pill{flex:1}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;margin-top:20px;display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);gap:20px}
+@media(max-width:900px){.chart{grid-template-columns:minmax(0,1fr)}}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.fig{position:relative;height:clamp(300px,42vw,420px)}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+svg text{font:13px Inter,sans-serif;fill:var(--muted);paint-order:stroke;stroke:var(--card);stroke-width:4px}
+.side h3{font-size:18px;margin-bottom:8px}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent)}
+.chk small{display:block;color:var(--muted);font-size:13px}
+.detail{background:var(--sage);border-radius:16px;padding:12px 14px;font-size:14px;margin-top:10px}
+.detail dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:6px 0 0}.detail dt{color:var(--muted)}.detail dd{margin:0}
+.honest{display:grid;grid-template-columns:repeat(auto-fit,minmax(16em,1fr));gap:16px;margin-top:16px}
+.honest div{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;font-size:15px}
+.honest h3{font-size:17px;margin-bottom:6px}
+</style>
+
+<section class="band"><div class="wrap">
+  <div class="top">
+    <div><h1>Haftalık görseller ve büyüme grafiği</h1>
+    <p class="lede">Onayın için üç görsel örnek ve bir grafik prototipi. Görsellerin hepsi bu proje için kodla çizildi. Rakamlar NHS ve WHO sayfalarından okundu. Haftalık metinler henüz taslak.</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="pill" id="motion" aria-pressed="true">Hareket açık</button>
+    </div>
+  </div>
+  <div class="phones anim" id="phones"></div>
+  <p class="src" style="margin-top:14px">Görseller ortak bir fiziksel ölçekte çizilmedi; erik, muz ve bal kabağı aynı çerçeveye sığdırıldı. Ekrandaki boyut gerçek boyut değildir.</p>
+</div></section>
+
+<section class="band" style="background:var(--sage)"><div class="wrap">
+  <h2>Kilo grafiği: kişisel ölçümler ve WHO referansı</h2>
+  <p class="lede">Örnek çocuk Deniz kurgusaldır. Referans çizgileri WHO tablosundaki L, M, S değerlerinden çizildi. Persentil değeri doğrulama bitene kadar gösterilmiyor.</p>
+  <div class="chart">
+    <div>
+      <div class="ctl" role="group" aria-label="Gösterge">
+        <button class="pill ind" data-i="weight" aria-pressed="true">Kilo</button>
+        <button class="pill ind" data-i="length" aria-pressed="false">Boy</button>
+        <button class="pill ind" data-i="head" aria-pressed="false">Baş çevresi</button>
+      </div>
+      <div class="ctl" role="group" aria-label="Referans cinsiyeti">
+        <button class="pill sex" data-s="female" aria-pressed="false">Kız referansı</button>
+        <button class="pill sex" data-s="male" aria-pressed="false">Erkek referansı</button>
+        <button class="pill sex" data-s="none" aria-pressed="true">Belirtilmedi</button>
+      </div>
+      <div class="fig" id="fig" role="img" aria-label="Kilo-yaş grafiği"></div>
+      <p class="src" id="figNote"></p>
+    </div>
+    <div class="side">
+      <h3>Kaynaklar</h3>
+      <label class="chk"><input type="checkbox" id="srcWho" checked><span>WHO Çocuk Büyüme Standartları<small>0–24 ay, ağırlık-yaş. Prototipte aylık tablo yüklü.</small></span></label>
+      <label class="chk"><input type="checkbox" id="srcCdc" disabled><span>CDC büyüme referansları<small>Şu an kapalı: CDC dosyaları henüz indirilemedi ve doğrulanmadı.</small></span></label>
+      <label class="chk"><input type="checkbox" id="adv"><span>Daha fazla eğri göster<small>3., 15., 85. ve 97. persentil eğrileri.</small></span></label>
+      <p class="src">AAP ve CDC'nin 2 yaş altı için hangi grafiği önerdiği açıklama metni olarak gösterilecek. AAP sayfası henüz okunamadığı için bu metin eklenmedi.</p>
+      <div class="detail" id="detail"><b>Bir ölçüme dokun</b><p style="margin:4px 0 0">Tarih, yaş, değer ve kaynak burada görünür.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Neler kesin, neler geçici</h2>
+  <div class="honest">
+    <div><h3>Görseller</h3>Üçü de geçici örnek. Kodla yazılmış SVG, Chromium ile PNG/WebP'ye çevrildi. Görsel üretim aracı kullanılmadı. Onay verirsen aynı teknikle 37 hafta çizilir; istersen bir illüstratör için brief hazırlarım.</div>
+    <div><h3>Hafta bilgisi</h3>NHS'in 4–40. hafta sayfalarının 37'si de okundu. Nesne ve uzunluklar oradan. NHS hiçbir haftada bebek kilosu vermiyor, bu yüzden kilo gösterilmiyor.</div>
+    <div><h3>Büyüme verisi</h3>WHO aylık tablo PDF'inden okundu; 550 persentil değeri L, M, S'den yeniden hesaplanıp birebir tuttu. Günlük ham dosyalar ve CDC dosyaları ağ kısıtı nedeniyle henüz indirilmedi.</div>
+  </div>
+</div></section>
+
+<script>
+{
+const IMG={plum:"__PLUM__",banana:"__BANANA__",pumpkin:"__PUMPKIN__"};
+const WEEKS=[
+ {k:'plum',w:12,d:3,obj:'bir erik',len:'Yaklaşık 5,4 cm, baştan popoya (CRL)',alt:'Mor kabuklu, üzerinde hafif beyaz pus olan, sapı yukarıda bir erik',
+  baby:'İç organlar ve kaslar büyümeye devam ediyor.',you:'Belin kalınlaşmaya, göğüslerin büyümeye başlamış olabilir.',src:'1st-trimester/week-12/'},
+ {k:'banana',w:20,d:1,obj:'bir muz',len:'Yaklaşık 25,6 cm, baştan topuğa (CHL)',alt:'Sarı, hafif kavisli, birkaç küçük benekli bir muz',
+  extra:'20. haftadan itibaren ölçü baştan topuğa alınır. 19. haftadaki 15,3 cm baştan popoya ölçüdür; aradaki fark ölçüm yöntemindendir.',
+  baby:'Bebeğin teni vernix denen beyaz, yağlı bir tabakayla kaplı.',you:'Gece baldırlarında ani kramplarla uyanabilirsin.',src:'2nd-trimester/week-20/'},
+ {k:'pumpkin',w:40,d:0,obj:'bir bal kabağı',len:'Yaklaşık 51,2 cm, baştan topuğa (CHL)',alt:'Turuncu, dilimli, kalın yeşil saplı bir bal kabağı',
+  baby:'Bebeğin hareket alanı daralıyor ama hareketleri her zamanki düzeninde sürmeli.',you:'Doğum sancıları başladığında bunu fark edeceksin.',src:'3rd-trimester/week-40/'}];
+const BASE='https://www.nhs.uk/best-start-in-life/pregnancy/week-by-week-guide-to-pregnancy/';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+document.getElementById('phones').innerHTML=WEEKS.map(x=>`
+ <article class="phone" aria-label="${x.w}. hafta örneği">
+  <div class="who"><b>Fıstık</b><span>Tahmini gebelik haftası</span></div>
+  <div class="hero">
+   <div class="week">${x.w} hafta<small>${x.d} gün</small></div>
+   <div class="art"><img src="${IMG[x.k]}" alt="${esc(x.alt)}" width="280" height="280"><div class="sheen"></div></div>
+   <div class="size">Bu hafta yaklaşık ${esc(x.obj)} büyüklüğünde</div>
+   <div class="meas">${esc(x.len)}</div>
+  </div>
+  ${x.extra?`<div class="note">${esc(x.extra)}</div>`:''}
+  <div class="draft">Taslak metin: NHS sayfasından özetlendi, uzman incelemesinden geçmedi.</div>
+  <div class="sec"><h3>Bebeğinde bu hafta</h3><p>${esc(x.baby)}</p></div>
+  <div class="sec"><h3>Sende bu hafta</h3><p>${esc(x.you)}</p></div>
+  <div class="add">+ Fotoğraf ya da not ekle</div>
+  <div class="src">Kaynak: <a href="${BASE+x.src}">NHS Best Start in Life, ${x.w}. hafta</a> · erişim 27.11.2026</div>
+  <div class="nav"><button class="pill" ${x.w<=4?'disabled':''}>‹ ${x.w-1}. hafta</button><button class="pill" ${x.w>=40?'disabled':''}>${x.w+1}. hafta ›</button></div>
+ </article>`).join('');
+
+const phones=document.getElementById('phones'),mBtn=document.getElementById('motion');
+let motionOn=true;
+mBtn.onclick=()=>{motionOn=!motionOn;phones.classList.toggle('anim',motionOn);mBtn.setAttribute('aria-pressed',motionOn);mBtn.textContent=motionOn?'Hareket açık':'Hareket kapalı'};
+const io=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('paused',!e.isIntersecting)));
+document.querySelectorAll('.phone').forEach(p=>io.observe(p));
+document.addEventListener('visibilitychange',()=>phones.classList.toggle('paused',document.hidden));
+
+const WHO=__WHO__;
+const MEAS=[[0,3.31,'Doğumda, hastane'],[40,4.6,'Ev tartısı'],[120,6.4,'Klinik'],[220,7.9,'Klinik'],[370,9.1,'Klinik'],[520,10.3,'Ev tartısı'],[760,11.8,'Klinik']];
+const BIRTH=new Date(Date.UTC(2024,7,29));
+const DPM=30.4375;
+let sex='none',ind='weight',adv=false,sel=null;
+const z={3:-1.8807936,15:-1.0364334,50:0,85:1.0364334,97:1.8807936};
+const lmsAt=(t,m)=>{const i=Math.min(Math.floor(m),23),f=m-i,a=t[i],b=t[i+1];return [0,1,2].map(j=>a[j+1]+(b[j+1]-a[j+1])*f)};
+const val=(l,mu,s,zz)=>Math.abs(l)<1e-9?mu*Math.exp(s*zz):mu*Math.pow(1+l*s*zz,1/l);
+const dateTR=d=>new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(d);
+function ageTR(days){const d=new Date(BIRTH.getTime()+days*864e5);let y=d.getUTCFullYear()-BIRTH.getUTCFullYear(),m=d.getUTCMonth()-BIRTH.getUTCMonth(),dd=d.getUTCDate()-BIRTH.getUTCDate();if(dd<0){m--;dd+=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),0)).getUTCDate()}if(m<0){y--;m+=12}return (y?y+' yaş ':'')+(m?m+' ay ':'')+(dd||(!y&&!m)?dd+' gün':'').trim()}
+const fig=document.getElementById('fig'),note=document.getElementById('figNote');
+function draw(){
+ const W=fig.clientWidth,H=fig.clientHeight,ml=44,mr=W<520?20:64,mt=12,mb=40,pw=W-ml-mr,ph=H-mt-mb;
+ if(ind!=='weight'){fig.innerHTML=`<svg viewBox="0 0 ${W} ${H}"><text x="${W/2}" y="${H/2-8}" text-anchor="middle" style="font-size:16px;fill:var(--ink)">Bu gösterge için referans verisi henüz yüklenmedi.</text><text x="${W/2}" y="${H/2+16}" text-anchor="middle">Boy ve baş çevresi tabloları doğrulandıktan sonra açılacak.</text></svg>`;note.textContent='';return}
+ const xMax=26,yMax=16,X=m=>ml+m/xMax*pw,Y=v=>mt+ph-v/yMax*ph;
+ let g='';
+ for(let v=0;v<=yMax;v+=2)g+=`<line x1="${ml}" x2="${ml+pw}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${ml-8}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
+ for(let m=0;m<=xMax;m+=(W<520?6:3))g+=`<text x="${X(m)}" y="${H-12}" text-anchor="middle">${m}</text>`;
+ g+=`<text x="${ml+pw}" y="${H-2}" text-anchor="end" style="fill:var(--ink)">yaş (ay)</text><text x="${ml}" y="${mt+10}" style="fill:var(--ink)">kg</text>`;
+ const showRef=sex!=='none'&&document.getElementById('srcWho').checked;
+ if(showRef){
+  const t=WHO[sex],pts=p=>{let s='';for(let m=0;m<=24.001;m+=0.25){const[l,mu,sg]=lmsAt(t,m);s+=`${X(m)},${Y(val(l,mu,sg,z[p]))} `}return s};
+  g+=`<rect x="${X(24)}" y="${mt}" width="${X(xMax)-X(24)}" height="${ph}" fill="var(--bg)" opacity=".6"/>`;
+  if(adv)[3,15,85,97].forEach(p=>{g+=`<polyline points="${pts(p)}" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="${p==3||p==97?'2 4':''}" opacity=".7"/>`;const[l,mu,sg]=lmsAt(t,24);if(W>=520)g+=`<text x="${X(24)+6}" y="${Y(val(l,mu,sg,z[p]))+4}">${p}.</text>`});
+  g+=`<polyline points="${pts(50)}" fill="none" stroke="var(--accent)" stroke-width="2" opacity=".55"/>`;
+  
+ }
+ MEAS.forEach((p,i)=>{if(!i)return;const q=MEAS[i-1],gap=p[0]-q[0]>120;g+=`<line x1="${X(q[0]/DPM)}" y1="${Y(q[1])}" x2="${X(p[0]/DPM)}" y2="${Y(p[1])}" stroke="var(--child)" stroke-width="2.5" ${gap?'stroke-dasharray="5 6"':''}/>`});
+ MEAS.forEach((p,i)=>{const x=X(p[0]/DPM),y=Y(p[1]);g+=`<circle cx="${x}" cy="${y}" r="${sel===i?9:7}" fill="var(--child)" stroke="var(--card)" stroke-width="3"/><circle class="hit" data-i="${i}" cx="${x}" cy="${y}" r="22" fill="transparent" style="cursor:pointer" tabindex="0" role="button" aria-label="${dateTR(new Date(BIRTH.getTime()+p[0]*864e5))} ölçümü, ${String(p[1]).replace('.',',')} kg"/>`});
+ fig.innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+ fig.querySelectorAll('.hit').forEach(c=>{const f=()=>{sel=+c.dataset.i;showDetail();draw()};c.onclick=f;c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f()}}});
+ note.textContent=sex==='none'?'Referans cinsiyeti seçilmediği için yalnızca kişisel ölçümler gösteriliyor. Referans eğrileri kız ve erkek için ayrı yayımlanır; bu yüzden seçim gerekiyor.':'Kırmızı: Deniz\'in ölçümleri. Yeşil: WHO medyanı. Gri: seçilirse diğer persentiller. Kesik kırmızı çizgi: iki ölçüm arasında 4 aydan uzun boşluk var, aradaki seyir bilinmiyor. Taralı alan: prototipte 24 aydan sonrası için referans yüklü değil.';
+}
+function showDetail(){
+ if(sel==null)return;const p=MEAS[sel],d=new Date(BIRTH.getTime()+p[0]*864e5),out=p[0]/DPM>24;
+ const ref=sex==='none'?'Seçilmedi':`WHO Çocuk Büyüme Standartları, ağırlık-yaş, ${sex==='female'?'kız':'erkek'}`;
+ document.getElementById('detail').innerHTML=`<b>${dateTR(d)}</b><dl><dt>Yaş</dt><dd>${ageTR(p[0])}</dd><dt>Değer</dt><dd>${String(p[1]).replace('.',',')} kg</dd><dt>Ölçüm</dt><dd>${esc(p[2])}</dd><dt>Referans</dt><dd>${ref}</dd><dt>Persentil</dt><dd>${out?'Yüklü referans aralığının dışında':'Doğrulama tamamlanana kadar gösterilmiyor'}</dd></dl>`;
+}
+document.querySelectorAll('.sex').forEach(b=>b.onclick=()=>{sex=b.dataset.s;document.querySelectorAll('.sex').forEach(o=>o.setAttribute('aria-pressed',o===b));draw();showDetail()});
+document.querySelectorAll('.ind').forEach(b=>b.onclick=()=>{ind=b.dataset.i;document.querySelectorAll('.ind').forEach(o=>o.setAttribute('aria-pressed',o===b));draw()});
+document.getElementById('adv').onchange=e=>{adv=e.target.checked;draw()};
+document.getElementById('srcWho').onchange=draw;
+const ro=new ResizeObserver(draw);ro.observe(fig);
+}
+</script>

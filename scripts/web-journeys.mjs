@@ -18,9 +18,13 @@ const page = await ctx.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 
+/** A journey fails on a failed assertion AND on any uncaught page error raised while it ran. */
 async function journey(name, fn) {
+  const errorsBefore = errors.length;
   try {
     await fn();
+    const newErrors = errors.slice(errorsBefore);
+    if (newErrors.length) throw new Error(`uncaught page error: ${newErrors[0]}`);
     results.push(['PASS', name]);
   } catch (e) {
     results.push(['FAIL', name, e.message.split('\n')[0]]);
@@ -148,6 +152,20 @@ await journey('10. Delete a memory with photos; media no longer resolvable', asy
   await see('silinmiş');
 });
 
+await journey('13. Prototype preview: reference sex is explicit, no percentile shown', async () => {
+  await page.goto(`${base}/preview/visuals`);
+  await see('Hafta görselleri');
+  await see('Taslak'); // weekly comparison rows are drafts
+  await page.getByTestId('growth-chart').scrollIntoViewIfNeeded();
+  // Default is "Belirtilmedi": only the child's own points, no reference.
+  await page.locator('[data-testid^="growth-point-"]').first().click();
+  await see('Seçilmedi');
+  await page.getByText('Kız referansı', { exact: true }).click();
+  await page.locator('[data-testid^="growth-point-"]').first().click();
+  await see('WHO 2006');
+  await see('Doğrulama tamamlanana kadar gösterilmiyor');
+});
+
 await journey('11. Upload failure: memory is NOT reported saved; retry works', async () => {
   await page.goto(`${base}/settings`);
   await page.getByRole('switch', { name: 'Fotoğraf yükleme hatasını taklit et' }).click();
@@ -174,4 +192,5 @@ await browser.close();
 for (const r of results) console.log(r.join(' | '));
 if (errors.length) console.log('page errors:', [...new Set(errors)].join(' / '));
 console.log(`${results.filter((r) => r[0] === 'PASS').length}/${results.length} passed`);
-process.exit(results.some((r) => r[0] === 'FAIL') ? 1 : 0);
+// Errors outside any journey (e.g. during final navigation) also fail the run.
+process.exit(results.some((r) => r[0] === 'FAIL') || errors.length ? 1 : 0);

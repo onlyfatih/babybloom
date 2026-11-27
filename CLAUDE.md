@@ -12,6 +12,9 @@ trust memory of Expo APIs; use `npx expo install`).
   diagnosis, lab interpretation, medication advice, medical alerts, leap
   calendars, percentiles, voice transcription, gamification, payments, social
   feed, chat, CMS, full offline sync, microservices.
+  Exception: growth percentiles are in scope for milestone M3 only, under
+  ADR-009. They stay switched off until a dataset is `validated`
+  (docs/growth-references.md).
 - Never claim E2E encryption, medical review, production readiness, native
   verification from web runs, or store approval.
 - Client permission checks (`src/domain/permissions`) only decide what the UI

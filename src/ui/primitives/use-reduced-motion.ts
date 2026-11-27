@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
 
-export function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false);
+/** `true`/`false` once the system setting is known, `null` before that. */
+export function useReducedMotionSetting(): boolean | null {
+  const [reduced, setReduced] = useState<boolean | null>(null);
   useEffect(() => {
     let mounted = true;
     AccessibilityInfo.isReduceMotionEnabled().then((v) => mounted && setReduced(v)).catch(() => undefined);
@@ -13,4 +14,9 @@ export function useReducedMotion(): boolean {
     };
   }, []);
   return reduced;
+}
+
+/** Treats "not yet known" as motion allowed. Prefer the setting variant for looping motion. */
+export function useReducedMotion(): boolean {
+  return useReducedMotionSetting() ?? false;
 }

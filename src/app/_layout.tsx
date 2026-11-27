@@ -95,6 +95,7 @@ function AppNavigator() {
         <Stack.Screen name="family/invite" options={{ presentation: 'modal' }} />
         <Stack.Screen name="settings" />
         <Stack.Screen name="export" />
+        <Stack.Screen name="preview/visuals" />
         <Stack.Screen name="pregnancy/manage" />
         <Stack.Screen name="pregnancy/dating" />
         <Stack.Screen name="pregnancy/birth" />

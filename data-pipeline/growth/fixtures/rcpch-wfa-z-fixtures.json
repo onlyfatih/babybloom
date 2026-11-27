@@ -1,0 +1,1506 @@
+{
+ "generatedBy": "rcpchgrowth 4.6.5 sds_for_measurement(reference=\"who\")",
+ "note": "Expected z-scores from an independent implementation. Do not regenerate with Minik Atlas code.",
+ "cases": [
+  {
+   "sex": "female",
+   "ageMonths": 0,
+   "weightKg": 2.59,
+   "zRcpch": -1.498964
+  },
+  {
+   "sex": "female",
+   "ageMonths": 0,
+   "weightKg": 2.91,
+   "zRcpch": -0.726396
+  },
+  {
+   "sex": "female",
+   "ageMonths": 0,
+   "weightKg": 3.23,
+   "zRcpch": -0.004804
+  },
+  {
+   "sex": "female",
+   "ageMonths": 0,
+   "weightKg": 3.56,
+   "zRcpch": 0.694352
+  },
+  {
+   "sex": "female",
+   "ageMonths": 0,
+   "weightKg": 4.04,
+   "zRcpch": 1.64303
+  },
+  {
+   "sex": "female",
+   "ageMonths": 1,
+   "weightKg": 3.35,
+   "zRcpch": -1.594914
+  },
+  {
+   "sex": "female",
+   "ageMonths": 1,
+   "weightKg": 3.77,
+   "zRcpch": -0.758116
+  },
+  {
+   "sex": "female",
+   "ageMonths": 1,
+   "weightKg": 4.19,
+   "zRcpch": 0.004686
+  },
+  {
+   "sex": "female",
+   "ageMonths": 1,
+   "weightKg": 4.61,
+   "zRcpch": 0.706552
+  },
+  {
+   "sex": "female",
+   "ageMonths": 1,
+   "weightKg": 5.23,
+   "zRcpch": 1.651448
+  },
+  {
+   "sex": "female",
+   "ageMonths": 2,
+   "weightKg": 4.1,
+   "zRcpch": -1.70285
+  },
+  {
+   "sex": "female",
+   "ageMonths": 2,
+   "weightKg": 4.62,
+   "zRcpch": -0.79871
+  },
+  {
+   "sex": "female",
+   "ageMonths": 2,
+   "weightKg": 5.13,
+   "zRcpch": 0.002737
+  },
+  {
+   "sex": "female",
+   "ageMonths": 2,
+   "weightKg": 5.64,
+   "zRcpch": 0.735152
+  },
+  {
+   "sex": "female",
+   "ageMonths": 2,
+   "weightKg": 6.41,
+   "zRcpch": 1.734753
+  },
+  {
+   "sex": "female",
+   "ageMonths": 3,
+   "weightKg": 4.68,
+   "zRcpch": -1.754782
+  },
+  {
+   "sex": "female",
+   "ageMonths": 3,
+   "weightKg": 5.26,
+   "zRcpch": -0.83503
+  },
+  {
+   "sex": "female",
+   "ageMonths": 3,
+   "weightKg": 5.85,
+   "zRcpch": 0.005649
+  },
+  {
+   "sex": "female",
+   "ageMonths": 3,
+   "weightKg": 6.43,
+   "zRcpch": 0.756216
+  },
+  {
+   "sex": "female",
+   "ageMonths": 3,
+   "weightKg": 7.31,
+   "zRcpch": 1.779209
+  },
+  {
+   "sex": "female",
+   "ageMonths": 4,
+   "weightKg": 5.14,
+   "zRcpch": -1.798584
+  },
+  {
+   "sex": "female",
+   "ageMonths": 4,
+   "weightKg": 5.78,
+   "zRcpch": -0.851606
+  },
+  {
+   "sex": "female",
+   "ageMonths": 4,
+   "weightKg": 6.42,
+   "zRcpch": -0.004646
+  },
+  {
+   "sex": "female",
+   "ageMonths": 4,
+   "weightKg": 7.07,
+   "zRcpch": 0.77279
+  },
+  {
+   "sex": "female",
+   "ageMonths": 4,
+   "weightKg": 8.03,
+   "zRcpch": 1.798596
+  },
+  {
+   "sex": "female",
+   "ageMonths": 5,
+   "weightKg": 5.52,
+   "zRcpch": -1.825117
+  },
+  {
+   "sex": "female",
+   "ageMonths": 5,
+   "weightKg": 6.21,
+   "zRcpch": -0.858664
+  },
+  {
+   "sex": "female",
+   "ageMonths": 5,
+   "weightKg": 6.9,
+   "zRcpch": 0.00172
+  },
+  {
+   "sex": "female",
+   "ageMonths": 5,
+   "weightKg": 7.59,
+   "zRcpch": 0.77668
+  },
+  {
+   "sex": "female",
+   "ageMonths": 5,
+   "weightKg": 8.62,
+   "zRcpch": 1.806429
+  },
+  {
+   "sex": "female",
+   "ageMonths": 6,
+   "weightKg": 5.84,
+   "zRcpch": -1.840487
+  },
+  {
+   "sex": "female",
+   "ageMonths": 6,
+   "weightKg": 6.57,
+   "zRcpch": -0.863379
+  },
+  {
+   "sex": "female",
+   "ageMonths": 6,
+   "weightKg": 7.3,
+   "zRcpch": 0.00334
+  },
+  {
+   "sex": "female",
+   "ageMonths": 6,
+   "weightKg": 8.03,
+   "zRcpch": 0.781463
+  },
+  {
+   "sex": "female",
+   "ageMonths": 6,
+   "weightKg": 9.12,
+   "zRcpch": 1.811937
+  },
+  {
+   "sex": "female",
+   "ageMonths": 7,
+   "weightKg": 6.11,
+   "zRcpch": -1.859006
+  },
+  {
+   "sex": "female",
+   "ageMonths": 7,
+   "weightKg": 6.88,
+   "zRcpch": -0.867556
+  },
+  {
+   "sex": "female",
+   "ageMonths": 7,
+   "weightKg": 7.64,
+   "zRcpch": -0.002431
+  },
+  {
+   "sex": "female",
+   "ageMonths": 7,
+   "weightKg": 8.41,
+   "zRcpch": 0.782173
+  },
+  {
+   "sex": "female",
+   "ageMonths": 7,
+   "weightKg": 9.55,
+   "zRcpch": 1.808886
+  },
+  {
+   "sex": "female",
+   "ageMonths": 8,
+   "weightKg": 6.36,
+   "zRcpch": -1.857119
+  },
+  {
+   "sex": "female",
+   "ageMonths": 8,
+   "weightKg": 7.15,
+   "zRcpch": -0.875294
+  },
+  {
+   "sex": "female",
+   "ageMonths": 8,
+   "weightKg": 7.95,
+   "zRcpch": 0.001394
+  },
+  {
+   "sex": "female",
+   "ageMonths": 8,
+   "weightKg": 8.74,
+   "zRcpch": 0.774437
+  },
+  {
+   "sex": "female",
+   "ageMonths": 8,
+   "weightKg": 9.94,
+   "zRcpch": 1.809259
+  },
+  {
+   "sex": "female",
+   "ageMonths": 9,
+   "weightKg": 6.58,
+   "zRcpch": -1.860668
+  },
+  {
+   "sex": "female",
+   "ageMonths": 9,
+   "weightKg": 7.4,
+   "zRcpch": -0.873752
+  },
+  {
+   "sex": "female",
+   "ageMonths": 9,
+   "weightKg": 8.23,
+   "zRcpch": 0.004626
+  },
+  {
+   "sex": "female",
+   "ageMonths": 9,
+   "weightKg": 9.05,
+   "zRcpch": 0.777599
+  },
+  {
+   "sex": "female",
+   "ageMonths": 9,
+   "weightKg": 10.28,
+   "zRcpch": 1.797491
+  },
+  {
+   "sex": "female",
+   "ageMonths": 10,
+   "weightKg": 6.78,
+   "zRcpch": -1.865723
+  },
+  {
+   "sex": "female",
+   "ageMonths": 10,
+   "weightKg": 7.63,
+   "zRcpch": -0.871919
+  },
+  {
+   "sex": "female",
+   "ageMonths": 10,
+   "weightKg": 8.48,
+   "zRcpch": 6e-05
+  },
+  {
+   "sex": "female",
+   "ageMonths": 10,
+   "weightKg": 9.33,
+   "zRcpch": 0.775302
+  },
+  {
+   "sex": "female",
+   "ageMonths": 10,
+   "weightKg": 10.6,
+   "zRcpch": 1.791556
+  },
+  {
+   "sex": "female",
+   "ageMonths": 11,
+   "weightKg": 6.98,
+   "zRcpch": -1.855037
+  },
+  {
+   "sex": "female",
+   "ageMonths": 11,
+   "weightKg": 7.85,
+   "zRcpch": -0.866017
+  },
+  {
+   "sex": "female",
+   "ageMonths": 11,
+   "weightKg": 8.72,
+   "zRcpch": 0.000696
+  },
+  {
+   "sex": "female",
+   "ageMonths": 11,
+   "weightKg": 9.59,
+   "zRcpch": 0.770355
+  },
+  {
+   "sex": "female",
+   "ageMonths": 11,
+   "weightKg": 10.9,
+   "zRcpch": 1.785193
+  },
+  {
+   "sex": "female",
+   "ageMonths": 12,
+   "weightKg": 7.16,
+   "zRcpch": -1.858847
+  },
+  {
+   "sex": "female",
+   "ageMonths": 12,
+   "weightKg": 8.05,
+   "zRcpch": -0.871452
+  },
+  {
+   "sex": "female",
+   "ageMonths": 12,
+   "weightKg": 8.95,
+   "zRcpch": 0.001776
+  },
+  {
+   "sex": "female",
+   "ageMonths": 12,
+   "weightKg": 9.84,
+   "zRcpch": 0.767185
+  },
+  {
+   "sex": "female",
+   "ageMonths": 12,
+   "weightKg": 11.19,
+   "zRcpch": 1.782006
+  },
+  {
+   "sex": "female",
+   "ageMonths": 13,
+   "weightKg": 7.34,
+   "zRcpch": -1.856443
+  },
+  {
+   "sex": "female",
+   "ageMonths": 13,
+   "weightKg": 8.25,
+   "zRcpch": -0.870586
+  },
+  {
+   "sex": "female",
+   "ageMonths": 13,
+   "weightKg": 9.17,
+   "zRcpch": 4.4e-05
+  },
+  {
+   "sex": "female",
+   "ageMonths": 13,
+   "weightKg": 10.09,
+   "zRcpch": 0.77044
+  },
+  {
+   "sex": "female",
+   "ageMonths": 13,
+   "weightKg": 11.46,
+   "zRcpch": 1.77198
+  },
+  {
+   "sex": "female",
+   "ageMonths": 14,
+   "weightKg": 7.51,
+   "zRcpch": -1.861506
+  },
+  {
+   "sex": "female",
+   "ageMonths": 14,
+   "weightKg": 8.45,
+   "zRcpch": -0.865685
+  },
+  {
+   "sex": "female",
+   "ageMonths": 14,
+   "weightKg": 9.39,
+   "zRcpch": 0.00261
+  },
+  {
+   "sex": "female",
+   "ageMonths": 14,
+   "weightKg": 10.33,
+   "zRcpch": 0.770228
+  },
+  {
+   "sex": "female",
+   "ageMonths": 14,
+   "weightKg": 11.73,
+   "zRcpch": 1.76725
+  },
+  {
+   "sex": "female",
+   "ageMonths": 15,
+   "weightKg": 7.68,
+   "zRcpch": -1.864101
+  },
+  {
+   "sex": "female",
+   "ageMonths": 15,
+   "weightKg": 8.64,
+   "zRcpch": -0.868148
+  },
+  {
+   "sex": "female",
+   "ageMonths": 15,
+   "weightKg": 9.6,
+   "zRcpch": -0.000625
+  },
+  {
+   "sex": "female",
+   "ageMonths": 15,
+   "weightKg": 10.56,
+   "zRcpch": 0.765595
+  },
+  {
+   "sex": "female",
+   "ageMonths": 15,
+   "weightKg": 12.0,
+   "zRcpch": 1.766322
+  },
+  {
+   "sex": "female",
+   "ageMonths": 16,
+   "weightKg": 7.85,
+   "zRcpch": -1.864728
+  },
+  {
+   "sex": "female",
+   "ageMonths": 16,
+   "weightKg": 8.83,
+   "zRcpch": -0.868754
+  },
+  {
+   "sex": "female",
+   "ageMonths": 16,
+   "weightKg": 9.81,
+   "zRcpch": -0.001988
+  },
+  {
+   "sex": "female",
+   "ageMonths": 16,
+   "weightKg": 10.79,
+   "zRcpch": 0.762936
+  },
+  {
+   "sex": "female",
+   "ageMonths": 16,
+   "weightKg": 12.27,
+   "zRcpch": 1.76732
+  },
+  {
+   "sex": "female",
+   "ageMonths": 17,
+   "weightKg": 8.02,
+   "zRcpch": -1.864173
+  },
+  {
+   "sex": "female",
+   "ageMonths": 17,
+   "weightKg": 9.02,
+   "zRcpch": -0.868203
+  },
+  {
+   "sex": "female",
+   "ageMonths": 17,
+   "weightKg": 10.02,
+   "zRcpch": -0.002124
+  },
+  {
+   "sex": "female",
+   "ageMonths": 17,
+   "weightKg": 11.02,
+   "zRcpch": 0.761644
+  },
+  {
+   "sex": "female",
+   "ageMonths": 17,
+   "weightKg": 12.53,
+   "zRcpch": 1.763564
+  },
+  {
+   "sex": "female",
+   "ageMonths": 18,
+   "weightKg": 8.19,
+   "zRcpch": -1.862222
+  },
+  {
+   "sex": "female",
+   "ageMonths": 18,
+   "weightKg": 9.21,
+   "zRcpch": -0.866498
+  },
+  {
+   "sex": "female",
+   "ageMonths": 18,
+   "weightKg": 10.23,
+   "zRcpch": -0.001221
+  },
+  {
+   "sex": "female",
+   "ageMonths": 18,
+   "weightKg": 11.25,
+   "zRcpch": 0.761361
+  },
+  {
+   "sex": "female",
+   "ageMonths": 18,
+   "weightKg": 12.79,
+   "zRcpch": 1.760894
+  },
+  {
+   "sex": "female",
+   "ageMonths": 19,
+   "weightKg": 8.35,
+   "zRcpch": -1.869233
+  },
+  {
+   "sex": "female",
+   "ageMonths": 19,
+   "weightKg": 9.4,
+   "zRcpch": -0.863749
+  },
+  {
+   "sex": "female",
+   "ageMonths": 19,
+   "weightKg": 10.44,
+   "zRcpch": 0.000525
+  },
+  {
+   "sex": "female",
+   "ageMonths": 19,
+   "weightKg": 11.48,
+   "zRcpch": 0.761806
+  },
+  {
+   "sex": "female",
+   "ageMonths": 19,
+   "weightKg": 13.05,
+   "zRcpch": 1.758898
+  },
+  {
+   "sex": "female",
+   "ageMonths": 20,
+   "weightKg": 8.52,
+   "zRcpch": -1.864734
+  },
+  {
+   "sex": "female",
+   "ageMonths": 20,
+   "weightKg": 9.58,
+   "zRcpch": -0.869037
+  },
+  {
+   "sex": "female",
+   "ageMonths": 20,
+   "weightKg": 10.65,
+   "zRcpch": 0.002743
+  },
+  {
+   "sex": "female",
+   "ageMonths": 20,
+   "weightKg": 11.71,
+   "zRcpch": 0.762592
+  },
+  {
+   "sex": "female",
+   "ageMonths": 20,
+   "weightKg": 13.31,
+   "zRcpch": 1.757147
+  },
+  {
+   "sex": "female",
+   "ageMonths": 21,
+   "weightKg": 8.68,
+   "zRcpch": -1.869696
+  },
+  {
+   "sex": "female",
+   "ageMonths": 21,
+   "weightKg": 9.77,
+   "zRcpch": -0.865258
+  },
+  {
+   "sex": "female",
+   "ageMonths": 21,
+   "weightKg": 10.85,
+   "zRcpch": -0.002521
+  },
+  {
+   "sex": "female",
+   "ageMonths": 21,
+   "weightKg": 11.94,
+   "zRcpch": 0.763249
+  },
+  {
+   "sex": "female",
+   "ageMonths": 21,
+   "weightKg": 13.57,
+   "zRcpch": 1.755208
+  },
+  {
+   "sex": "female",
+   "ageMonths": 22,
+   "weightKg": 8.85,
+   "zRcpch": -1.864306
+  },
+  {
+   "sex": "female",
+   "ageMonths": 22,
+   "weightKg": 9.95,
+   "zRcpch": -0.869989
+  },
+  {
+   "sex": "female",
+   "ageMonths": 22,
+   "weightKg": 11.06,
+   "zRcpch": -0.000549
+  },
+  {
+   "sex": "female",
+   "ageMonths": 22,
+   "weightKg": 12.17,
+   "zRcpch": 0.76333
+  },
+  {
+   "sex": "female",
+   "ageMonths": 22,
+   "weightKg": 13.83,
+   "zRcpch": 1.752494
+  },
+  {
+   "sex": "female",
+   "ageMonths": 23,
+   "weightKg": 9.02,
+   "zRcpch": -1.859052
+  },
+  {
+   "sex": "female",
+   "ageMonths": 23,
+   "weightKg": 10.14,
+   "zRcpch": -0.866574
+  },
+  {
+   "sex": "female",
+   "ageMonths": 23,
+   "weightKg": 11.27,
+   "zRcpch": 0.000838
+  },
+  {
+   "sex": "female",
+   "ageMonths": 23,
+   "weightKg": 12.4,
+   "zRcpch": 0.762712
+  },
+  {
+   "sex": "female",
+   "ageMonths": 23,
+   "weightKg": 14.09,
+   "zRcpch": 1.748992
+  },
+  {
+   "sex": "female",
+   "ageMonths": 24,
+   "weightKg": 9.18,
+   "zRcpch": -1.86586
+  },
+  {
+   "sex": "female",
+   "ageMonths": 24,
+   "weightKg": 10.33,
+   "zRcpch": -0.865948
+  },
+  {
+   "sex": "female",
+   "ageMonths": 24,
+   "weightKg": 11.48,
+   "zRcpch": -0.000633
+  },
+  {
+   "sex": "female",
+   "ageMonths": 24,
+   "weightKg": 12.63,
+   "zRcpch": 0.759194
+  },
+  {
+   "sex": "female",
+   "ageMonths": 24,
+   "weightKg": 14.35,
+   "zRcpch": 1.742561
+  },
+  {
+   "sex": "male",
+   "ageMonths": 0,
+   "weightKg": 2.68,
+   "zRcpch": -1.463417
+  },
+  {
+   "sex": "male",
+   "ageMonths": 0,
+   "weightKg": 3.01,
+   "zRcpch": -0.712313
+  },
+  {
+   "sex": "male",
+   "ageMonths": 0,
+   "weightKg": 3.35,
+   "zRcpch": 0.007365
+  },
+  {
+   "sex": "male",
+   "ageMonths": 0,
+   "weightKg": 3.68,
+   "zRcpch": 0.661687
+  },
+  {
+   "sex": "male",
+   "ageMonths": 0,
+   "weightKg": 4.18,
+   "zRcpch": 1.583887
+  },
+  {
+   "sex": "male",
+   "ageMonths": 1,
+   "weightKg": 3.58,
+   "zRcpch": -1.617414
+  },
+  {
+   "sex": "male",
+   "ageMonths": 1,
+   "weightKg": 4.02,
+   "zRcpch": -0.784052
+  },
+  {
+   "sex": "male",
+   "ageMonths": 1,
+   "weightKg": 4.47,
+   "zRcpch": -0.001534
+  },
+  {
+   "sex": "male",
+   "ageMonths": 1,
+   "weightKg": 4.92,
+   "zRcpch": 0.722465
+  },
+  {
+   "sex": "male",
+   "ageMonths": 1,
+   "weightKg": 5.59,
+   "zRcpch": 1.711202
+  },
+  {
+   "sex": "male",
+   "ageMonths": 2,
+   "weightKg": 4.45,
+   "zRcpch": -1.76967
+  },
+  {
+   "sex": "male",
+   "ageMonths": 2,
+   "weightKg": 5.01,
+   "zRcpch": -0.843189
+  },
+  {
+   "sex": "male",
+   "ageMonths": 2,
+   "weightKg": 5.57,
+   "zRcpch": 0.003534
+  },
+  {
+   "sex": "male",
+   "ageMonths": 2,
+   "weightKg": 6.12,
+   "zRcpch": 0.771005
+  },
+  {
+   "sex": "male",
+   "ageMonths": 2,
+   "weightKg": 6.96,
+   "zRcpch": 1.842522
+  },
+  {
+   "sex": "male",
+   "ageMonths": 3,
+   "weightKg": 5.1,
+   "zRcpch": -1.868008
+  },
+  {
+   "sex": "male",
+   "ageMonths": 3,
+   "weightKg": 5.74,
+   "zRcpch": -0.888244
+  },
+  {
+   "sex": "male",
+   "ageMonths": 3,
+   "weightKg": 6.38,
+   "zRcpch": 0.005056
+  },
+  {
+   "sex": "male",
+   "ageMonths": 3,
+   "weightKg": 7.01,
+   "zRcpch": 0.814784
+  },
+  {
+   "sex": "male",
+   "ageMonths": 3,
+   "weightKg": 7.97,
+   "zRcpch": 1.939949
+  },
+  {
+   "sex": "male",
+   "ageMonths": 4,
+   "weightKg": 5.6,
+   "zRcpch": -1.941011
+  },
+  {
+   "sex": "male",
+   "ageMonths": 4,
+   "weightKg": 6.3,
+   "zRcpch": -0.926378
+  },
+  {
+   "sex": "male",
+   "ageMonths": 4,
+   "weightKg": 7.0,
+   "zRcpch": -0.002903
+  },
+  {
+   "sex": "male",
+   "ageMonths": 4,
+   "weightKg": 7.7,
+   "zRcpch": 0.845595
+  },
+  {
+   "sex": "male",
+   "ageMonths": 4,
+   "weightKg": 8.75,
+   "zRcpch": 2.003523
+  },
+  {
+   "sex": "male",
+   "ageMonths": 5,
+   "weightKg": 6.01,
+   "zRcpch": -1.980636
+  },
+  {
+   "sex": "male",
+   "ageMonths": 5,
+   "weightKg": 6.76,
+   "zRcpch": -0.943277
+  },
+  {
+   "sex": "male",
+   "ageMonths": 5,
+   "weightKg": 7.51,
+   "zRcpch": -0.000638
+  },
+  {
+   "sex": "male",
+   "ageMonths": 5,
+   "weightKg": 8.26,
+   "zRcpch": 0.8642
+  },
+  {
+   "sex": "male",
+   "ageMonths": 5,
+   "weightKg": 9.39,
+   "zRcpch": 2.047449
+  },
+  {
+   "sex": "male",
+   "ageMonths": 6,
+   "weightKg": 6.35,
+   "zRcpch": -2.00425
+  },
+  {
+   "sex": "male",
+   "ageMonths": 6,
+   "weightKg": 7.14,
+   "zRcpch": -0.956002
+  },
+  {
+   "sex": "male",
+   "ageMonths": 6,
+   "weightKg": 7.93,
+   "zRcpch": -0.004674
+  },
+  {
+   "sex": "male",
+   "ageMonths": 6,
+   "weightKg": 8.73,
+   "zRcpch": 0.877709
+  },
+  {
+   "sex": "male",
+   "ageMonths": 6,
+   "weightKg": 9.92,
+   "zRcpch": 2.067531
+  },
+  {
+   "sex": "male",
+   "ageMonths": 7,
+   "weightKg": 6.64,
+   "zRcpch": -2.01791
+  },
+  {
+   "sex": "male",
+   "ageMonths": 7,
+   "weightKg": 7.47,
+   "zRcpch": -0.957406
+  },
+  {
+   "sex": "male",
+   "ageMonths": 7,
+   "weightKg": 8.3,
+   "zRcpch": 0.003323
+  },
+  {
+   "sex": "male",
+   "ageMonths": 7,
+   "weightKg": 9.13,
+   "zRcpch": 0.88235
+  },
+  {
+   "sex": "male",
+   "ageMonths": 7,
+   "weightKg": 10.37,
+   "zRcpch": 2.071809
+  },
+  {
+   "sex": "male",
+   "ageMonths": 8,
+   "weightKg": 6.89,
+   "zRcpch": -2.030103
+  },
+  {
+   "sex": "male",
+   "ageMonths": 8,
+   "weightKg": 7.75,
+   "zRcpch": -0.96723
+  },
+  {
+   "sex": "male",
+   "ageMonths": 8,
+   "weightKg": 8.62,
+   "zRcpch": 0.005225
+  },
+  {
+   "sex": "male",
+   "ageMonths": 8,
+   "weightKg": 9.48,
+   "zRcpch": 0.883446
+  },
+  {
+   "sex": "male",
+   "ageMonths": 8,
+   "weightKg": 10.77,
+   "zRcpch": 2.075094
+  },
+  {
+   "sex": "male",
+   "ageMonths": 9,
+   "weightKg": 7.12,
+   "zRcpch": -2.031273
+  },
+  {
+   "sex": "male",
+   "ageMonths": 9,
+   "weightKg": 8.01,
+   "zRcpch": -0.965002
+  },
+  {
+   "sex": "male",
+   "ageMonths": 9,
+   "weightKg": 8.9,
+   "zRcpch": -0.001381
+  },
+  {
+   "sex": "male",
+   "ageMonths": 9,
+   "weightKg": 9.79,
+   "zRcpch": 0.878379
+  },
+  {
+   "sex": "male",
+   "ageMonths": 9,
+   "weightKg": 11.13,
+   "zRcpch": 2.074698
+  },
+  {
+   "sex": "male",
+   "ageMonths": 10,
+   "weightKg": 7.33,
+   "zRcpch": -2.032742
+  },
+  {
+   "sex": "male",
+   "ageMonths": 10,
+   "weightKg": 8.25,
+   "zRcpch": -0.961556
+  },
+  {
+   "sex": "male",
+   "ageMonths": 10,
+   "weightKg": 9.16,
+   "zRcpch": -0.004923
+  },
+  {
+   "sex": "male",
+   "ageMonths": 10,
+   "weightKg": 10.08,
+   "zRcpch": 0.877318
+  },
+  {
+   "sex": "male",
+   "ageMonths": 10,
+   "weightKg": 11.46,
+   "zRcpch": 2.071006
+  },
+  {
+   "sex": "male",
+   "ageMonths": 11,
+   "weightKg": 7.53,
+   "zRcpch": -2.029167
+  },
+  {
+   "sex": "male",
+   "ageMonths": 11,
+   "weightKg": 8.47,
+   "zRcpch": -0.963366
+  },
+  {
+   "sex": "male",
+   "ageMonths": 11,
+   "weightKg": 9.41,
+   "zRcpch": -0.002064
+  },
+  {
+   "sex": "male",
+   "ageMonths": 11,
+   "weightKg": 10.35,
+   "zRcpch": 0.874014
+  },
+  {
+   "sex": "male",
+   "ageMonths": 11,
+   "weightKg": 11.77,
+   "zRcpch": 2.066686
+  },
+  {
+   "sex": "male",
+   "ageMonths": 12,
+   "weightKg": 7.72,
+   "zRcpch": -2.025859
+  },
+  {
+   "sex": "male",
+   "ageMonths": 12,
+   "weightKg": 8.68,
+   "zRcpch": -0.964344
+  },
+  {
+   "sex": "male",
+   "ageMonths": 12,
+   "weightKg": 9.65,
+   "zRcpch": 0.002016
+  },
+  {
+   "sex": "male",
+   "ageMonths": 12,
+   "weightKg": 10.61,
+   "zRcpch": 0.872758
+  },
+  {
+   "sex": "male",
+   "ageMonths": 12,
+   "weightKg": 12.06,
+   "zRcpch": 2.057329
+  },
+  {
+   "sex": "male",
+   "ageMonths": 13,
+   "weightKg": 7.9,
+   "zRcpch": -2.025248
+  },
+  {
+   "sex": "male",
+   "ageMonths": 13,
+   "weightKg": 8.89,
+   "zRcpch": -0.956832
+  },
+  {
+   "sex": "male",
+   "ageMonths": 13,
+   "weightKg": 9.87,
+   "zRcpch": -0.004551
+  },
+  {
+   "sex": "male",
+   "ageMonths": 13,
+   "weightKg": 10.86,
+   "zRcpch": 0.870821
+  },
+  {
+   "sex": "male",
+   "ageMonths": 13,
+   "weightKg": 12.34,
+   "zRcpch": 2.048221
+  },
+  {
+   "sex": "male",
+   "ageMonths": 14,
+   "weightKg": 8.08,
+   "zRcpch": -2.017786
+  },
+  {
+   "sex": "male",
+   "ageMonths": 14,
+   "weightKg": 9.09,
+   "zRcpch": -0.95322
+  },
+  {
+   "sex": "male",
+   "ageMonths": 14,
+   "weightKg": 10.1,
+   "zRcpch": 0.004252
+  },
+  {
+   "sex": "male",
+   "ageMonths": 14,
+   "weightKg": 11.1,
+   "zRcpch": 0.866387
+  },
+  {
+   "sex": "male",
+   "ageMonths": 14,
+   "weightKg": 12.62,
+   "zRcpch": 2.044718
+  },
+  {
+   "sex": "male",
+   "ageMonths": 15,
+   "weightKg": 8.25,
+   "zRcpch": -2.016423
+  },
+  {
+   "sex": "male",
+   "ageMonths": 15,
+   "weightKg": 9.28,
+   "zRcpch": -0.954846
+  },
+  {
+   "sex": "male",
+   "ageMonths": 15,
+   "weightKg": 10.31,
+   "zRcpch": -0.000738
+  },
+  {
+   "sex": "male",
+   "ageMonths": 15,
+   "weightKg": 11.34,
+   "zRcpch": 0.866022
+  },
+  {
+   "sex": "male",
+   "ageMonths": 15,
+   "weightKg": 12.89,
+   "zRcpch": 2.037585
+  },
+  {
+   "sex": "male",
+   "ageMonths": 16,
+   "weightKg": 8.42,
+   "zRcpch": -2.011451
+  },
+  {
+   "sex": "male",
+   "ageMonths": 16,
+   "weightKg": 9.47,
+   "zRcpch": -0.953039
+  },
+  {
+   "sex": "male",
+   "ageMonths": 16,
+   "weightKg": 10.52,
+   "zRcpch": -0.00241
+  },
+  {
+   "sex": "male",
+   "ageMonths": 16,
+   "weightKg": 11.58,
+   "zRcpch": 0.868513
+  },
+  {
+   "sex": "male",
+   "ageMonths": 16,
+   "weightKg": 13.15,
+   "zRcpch": 2.02637
+  },
+  {
+   "sex": "male",
+   "ageMonths": 17,
+   "weightKg": 8.59,
+   "zRcpch": -2.003344
+  },
+  {
+   "sex": "male",
+   "ageMonths": 17,
+   "weightKg": 9.66,
+   "zRcpch": -0.948441
+  },
+  {
+   "sex": "male",
+   "ageMonths": 17,
+   "weightKg": 10.73,
+   "zRcpch": -0.001577
+  },
+  {
+   "sex": "male",
+   "ageMonths": 17,
+   "weightKg": 11.81,
+   "zRcpch": 0.865235
+  },
+  {
+   "sex": "male",
+   "ageMonths": 17,
+   "weightKg": 13.41,
+   "zRcpch": 2.017131
+  },
+  {
+   "sex": "male",
+   "ageMonths": 18,
+   "weightKg": 8.75,
+   "zRcpch": -2.002819
+  },
+  {
+   "sex": "male",
+   "ageMonths": 18,
+   "weightKg": 9.84,
+   "zRcpch": -0.950668
+  },
+  {
+   "sex": "male",
+   "ageMonths": 18,
+   "weightKg": 10.94,
+   "zRcpch": 0.001264
+  },
+  {
+   "sex": "male",
+   "ageMonths": 18,
+   "weightKg": 12.03,
+   "zRcpch": 0.856255
+  },
+  {
+   "sex": "male",
+   "ageMonths": 18,
+   "weightKg": 13.67,
+   "zRcpch": 2.009412
+  },
+  {
+   "sex": "male",
+   "ageMonths": 19,
+   "weightKg": 8.91,
+   "zRcpch": -1.999942
+  },
+  {
+   "sex": "male",
+   "ageMonths": 19,
+   "weightKg": 10.03,
+   "zRcpch": -0.941882
+  },
+  {
+   "sex": "male",
+   "ageMonths": 19,
+   "weightKg": 11.14,
+   "zRcpch": -0.002407
+  },
+  {
+   "sex": "male",
+   "ageMonths": 19,
+   "weightKg": 12.26,
+   "zRcpch": 0.856341
+  },
+  {
+   "sex": "male",
+   "ageMonths": 19,
+   "weightKg": 13.93,
+   "zRcpch": 2.002969
+  },
+  {
+   "sex": "male",
+   "ageMonths": 20,
+   "weightKg": 9.08,
+   "zRcpch": -1.985348
+  },
+  {
+   "sex": "male",
+   "ageMonths": 20,
+   "weightKg": 10.21,
+   "zRcpch": -0.940661
+  },
+  {
+   "sex": "male",
+   "ageMonths": 20,
+   "weightKg": 11.35,
+   "zRcpch": 0.003026
+  },
+  {
+   "sex": "male",
+   "ageMonths": 20,
+   "weightKg": 12.48,
+   "zRcpch": 0.849918
+  },
+  {
+   "sex": "male",
+   "ageMonths": 20,
+   "weightKg": 14.18,
+   "zRcpch": 1.99056
+  },
+  {
+   "sex": "male",
+   "ageMonths": 21,
+   "weightKg": 9.24,
+   "zRcpch": -1.979815
+  },
+  {
+   "sex": "male",
+   "ageMonths": 21,
+   "weightKg": 10.39,
+   "zRcpch": -0.938675
+  },
+  {
+   "sex": "male",
+   "ageMonths": 21,
+   "weightKg": 11.55,
+   "zRcpch": 0.001048
+  },
+  {
+   "sex": "male",
+   "ageMonths": 21,
+   "weightKg": 12.7,
+   "zRcpch": 0.844013
+  },
+  {
+   "sex": "male",
+   "ageMonths": 21,
+   "weightKg": 14.44,
+   "zRcpch": 1.984714
+  },
+  {
+   "sex": "male",
+   "ageMonths": 22,
+   "weightKg": 9.4,
+   "zRcpch": -1.973101
+  },
+  {
+   "sex": "male",
+   "ageMonths": 22,
+   "weightKg": 10.58,
+   "zRcpch": -0.927424
+  },
+  {
+   "sex": "male",
+   "ageMonths": 22,
+   "weightKg": 11.75,
+   "zRcpch": -0.000244
+  },
+  {
+   "sex": "male",
+   "ageMonths": 22,
+   "weightKg": 12.93,
+   "zRcpch": 0.84545
+  },
+  {
+   "sex": "male",
+   "ageMonths": 22,
+   "weightKg": 14.69,
+   "zRcpch": 1.972872
+  },
+  {
+   "sex": "male",
+   "ageMonths": 23,
+   "weightKg": 9.56,
+   "zRcpch": -1.965578
+  },
+  {
+   "sex": "male",
+   "ageMonths": 23,
+   "weightKg": 10.76,
+   "zRcpch": -0.92408
+  },
+  {
+   "sex": "male",
+   "ageMonths": 23,
+   "weightKg": 11.95,
+   "zRcpch": -0.00104
+  },
+  {
+   "sex": "male",
+   "ageMonths": 23,
+   "weightKg": 13.15,
+   "zRcpch": 0.840296
+  },
+  {
+   "sex": "male",
+   "ageMonths": 23,
+   "weightKg": 14.94,
+   "zRcpch": 1.961328
+  },
+  {
+   "sex": "male",
+   "ageMonths": 24,
+   "weightKg": 9.72,
+   "zRcpch": -1.95923
+  },
+  {
+   "sex": "male",
+   "ageMonths": 24,
+   "weightKg": 10.94,
+   "zRcpch": -0.922152
+  },
+  {
+   "sex": "male",
+   "ageMonths": 24,
+   "weightKg": 12.15,
+   "zRcpch": -0.003457
+  },
+  {
+   "sex": "male",
+   "ageMonths": 24,
+   "weightKg": 13.37,
+   "zRcpch": 0.833351
+  },
+  {
+   "sex": "male",
+   "ageMonths": 24,
+   "weightKg": 15.19,
+   "zRcpch": 1.947783
+  }
+ ]
+}

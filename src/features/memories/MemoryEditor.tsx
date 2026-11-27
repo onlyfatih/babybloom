@@ -1,5 +1,5 @@
 import { router, Stack } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { t } from '@/content/localization';
 import { errorMessage } from '@/data/errors';
@@ -48,21 +48,28 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
   const [banner, setBanner] = useState<{ tone: 'danger' | 'warning' | 'info' | 'success'; message: string } | null>(null);
   const [partial, setPartial] = useState<{ uploaded: string[]; failed: number } | null>(null);
   const [draftRestored, setDraftRestored] = useState(false);
+  const formRef = useRef(form);
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
 
   // Restore a draft for new memories.
   useEffect(() => {
     if (existing) return;
     drafts.load<DraftShape>(draftKey).then((d) => {
-      if (d && (d.title || d.body)) {
-        setForm(d);
-        setDraftRestored(true);
-      }
+      if (!d || !(d.title || d.body)) return;
+      // Never overwrite what the user already typed while the draft was loading.
+      if (formRef.current.title || formRef.current.body) return;
+      setForm(d);
+      setDraftRestored(true);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (!existing && (form.title || form.body)) drafts.save(draftKey, form);
+    if (existing) return;
+    if (form.title || form.body) drafts.save(draftKey, form);
+    else drafts.clear(draftKey);
   }, [form, existing, draftKey]);
 
   const dirty =
@@ -240,7 +247,12 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
           });
         }}
       />
-      <ConfirmationSheet visible={guard.visible} title={t('common.discardTitle')} message={t('common.discardMessage')} confirmLabel={t('common.discardConfirm')} cancelLabel={t('common.keepEditing')} destructive onConfirm={guard.confirm} onCancel={guard.cancel} />
+      <ConfirmationSheet visible={guard.visible} title={t('common.discardTitle')} message={t('common.discardMessage')} confirmLabel={t('common.discardConfirm')} cancelLabel={t('common.keepEditing')} destructive onConfirm={() => {
+          if (!existing) drafts.clear(draftKey);
+          guard.confirm();
+        }}
+        onCancel={guard.cancel}
+      />
     </Screen>
   );
 }

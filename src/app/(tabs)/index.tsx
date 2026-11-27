@@ -13,6 +13,7 @@ import { MeasurementSummary, useMeasurements } from '@/features/measurements';
 import { MemoryCard, memoriesForProfile, useMemories } from '@/features/memories';
 import { PregnancyWeekHero, pregnancyView } from '@/features/pregnancy';
 import { ProfileSwitcherButton, profileName, sameRef, useRequiredSession, useSelectedProfile } from '@/features/profiles';
+import { SectionQueryState } from '@/features/shared/SectionQueryState';
 import { OfflineBanner } from '@/features/shared/OfflineBanner';
 import { useToday } from '@/features/shared/use-today';
 import { useNow } from '@/features/shared/use-now';
@@ -48,7 +49,7 @@ export default function Today() {
 
   return (
     <View style={styles.flex}>
-      <Screen header={<OfflineBanner />} bottomInset={72} onRefresh={() => { refetch(); memories.refetch(); appointments.refetch(); }}>
+      <Screen header={<OfflineBanner />} bottomInset={72} onRefresh={() => { refetch(); memories.refetch(); appointments.refetch(); if (selected.kind === 'child') measurements.refetch(); }}>
         <ProfileSwitcherButton name={name} subtitle={selected.kind === 'pregnancy' ? t('profile.pregnancyLabel') : t('profile.childLabel')} />
 
         {selected.kind === 'pregnancy' && pView ? (
@@ -93,29 +94,35 @@ export default function Today() {
           <>
             <ChildHeader child={selected.child} today={today} />
             <SectionHeader title={t('today.latestMeasurement')} actionLabel={t('common.seeAll')} onAction={() => router.push('/(tabs)/tracking')} />
-            {measurements.data?.length ? (
-              <MeasurementSummary items={measurements.data} onPress={() => router.push('/(tabs)/tracking')} />
-            ) : (
-              <Text color="textSecondary">{t('today.noMeasurement')}</Text>
-            )}
+            <SectionQueryState query={measurements}>
+              {measurements.data?.length ? (
+                <MeasurementSummary items={measurements.data} onPress={() => router.push('/(tabs)/tracking')} />
+              ) : (
+                <Text color="textSecondary">{t('today.noMeasurement')}</Text>
+              )}
+            </SectionQueryState>
           </>
         ) : null}
 
         <SectionHeader title={t('today.upcomingAppointment')} actionLabel={t('common.seeAll')} onAction={() => router.push({ pathname: '/(tabs)/tracking', params: { segment: 'appointments' } })} />
-        {nextAppointment ? (
-          <AppointmentRow appointment={nextAppointment} deviceTimeZone={deviceTimeZone()} onPress={() => router.push(`/appointment/${nextAppointment.id}`)} />
-        ) : (
-          <Text color="textSecondary">{t('today.noAppointment')}</Text>
-        )}
+        <SectionQueryState query={appointments}>
+          {nextAppointment ? (
+            <AppointmentRow appointment={nextAppointment} deviceTimeZone={deviceTimeZone()} onPress={() => router.push(`/appointment/${nextAppointment.id}`)} />
+          ) : (
+            <Text color="textSecondary">{t('today.noAppointment')}</Text>
+          )}
+        </SectionQueryState>
 
         <SectionHeader title={t('today.recentMemory')} actionLabel={t('common.seeAll')} onAction={() => router.push('/(tabs)/story')} />
-        {recentMemory ? (
-          <MemoryCard memory={recentMemory} authorName={names[recentMemory.authorId] ?? ''} isOwn={recentMemory.authorId === session.user.id} onPress={() => router.push(`/memory/${recentMemory.id}`)} compact />
-        ) : (
-          <Card tone="surfaceMuted" onPress={() => router.push('/memory/new')}>
-            <Text color="textSecondary">{t('today.noMemory')}</Text>
-          </Card>
-        )}
+        <SectionQueryState query={memories}>
+          {recentMemory ? (
+            <MemoryCard memory={recentMemory} authorName={names[recentMemory.authorId] ?? ''} isOwn={recentMemory.authorId === session.user.id} onPress={() => router.push(`/memory/${recentMemory.id}`)} compact />
+          ) : (
+            <Card tone="surfaceMuted" onPress={() => router.push('/memory/new')}>
+              <Text color="textSecondary">{t('today.noMemory')}</Text>
+            </Card>
+          )}
+        </SectionQueryState>
       </Screen>
       <Fab label={t('common.add')} accessibilityLabel={t('add.a11y')} onPress={() => router.push('/add')} />
     </View>

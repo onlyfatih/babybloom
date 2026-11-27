@@ -79,6 +79,8 @@ export default function Settings() {
             <Divider />
             <ToggleRow title={t('settings.simulateUploadFailure')} value={sim.uploadFailure} onValueChange={(uploadFailure) => simulationStore.set({ uploadFailure })} />
             <Divider />
+            <ListRow icon="images-outline" title={t('settings.visualPreview')} subtitle={t('settings.visualPreviewHint')} onPress={() => router.push('/preview/visuals')} />
+            <Divider />
             <ListRow icon="refresh-outline" title={t('settings.resetDemo')} onPress={async () => { const s = await demoControls.loadDemoFamily(); resetCacheToSession(qc, s); router.dismissAll(); router.replace('/(tabs)'); }} />
             <Divider />
             <ListRow icon="log-out-outline" title={t('settings.signOut')} onPress={leave} />

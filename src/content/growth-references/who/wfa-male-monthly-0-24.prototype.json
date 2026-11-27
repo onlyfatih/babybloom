@@ -1,0 +1,220 @@
+{
+ "id": "who-2006-wfa-male-monthly-0-24-prototype",
+ "publisher": "WHO",
+ "name": "WHO Child Growth Standards, weight-for-age, birth to 5 years (percentiles) \u2014 months 0\u201324 transcribed from PDF",
+ "release": "2006 (PDF as served 2026-11-27)",
+ "indicator": "weight-for-age",
+ "sex": "male",
+ "ageUnit": "month",
+ "ageMin": 0,
+ "ageMax": 24,
+ "valueUnit": "kg",
+ "measurementConvention": "weight",
+ "sourceUrl": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/wfa-boys-0-5-percentiles.pdf?sfvrsn=488e74e6_11",
+ "accessedOn": "2026-11-27",
+ "sha256": "2d3b9f46b6ee062116cf25d98797040b35b9c8b84418375260ef82324cd2a0f7",
+ "sha256Of": "data-pipeline/growth/fixtures/who-wfa-boys-0-24mo-pdf.csv (transcription; the PDF itself was not downloadable here)",
+ "validation": "unvalidated-prototype",
+ "rows": [
+  {
+   "x": 0,
+   "lms": {
+    "L": 0.3487,
+    "M": 3.3464,
+    "S": 0.14602
+   }
+  },
+  {
+   "x": 1,
+   "lms": {
+    "L": 0.2297,
+    "M": 4.4709,
+    "S": 0.13395
+   }
+  },
+  {
+   "x": 2,
+   "lms": {
+    "L": 0.197,
+    "M": 5.5675,
+    "S": 0.12385
+   }
+  },
+  {
+   "x": 3,
+   "lms": {
+    "L": 0.1738,
+    "M": 6.3762,
+    "S": 0.11727
+   }
+  },
+  {
+   "x": 4,
+   "lms": {
+    "L": 0.1553,
+    "M": 7.0023,
+    "S": 0.11316
+   }
+  },
+  {
+   "x": 5,
+   "lms": {
+    "L": 0.1395,
+    "M": 7.5105,
+    "S": 0.1108
+   }
+  },
+  {
+   "x": 6,
+   "lms": {
+    "L": 0.1257,
+    "M": 7.934,
+    "S": 0.10958
+   }
+  },
+  {
+   "x": 7,
+   "lms": {
+    "L": 0.1134,
+    "M": 8.297,
+    "S": 0.10902
+   }
+  },
+  {
+   "x": 8,
+   "lms": {
+    "L": 0.1021,
+    "M": 8.6151,
+    "S": 0.10882
+   }
+  },
+  {
+   "x": 9,
+   "lms": {
+    "L": 0.0917,
+    "M": 8.9014,
+    "S": 0.10881
+   }
+  },
+  {
+   "x": 10,
+   "lms": {
+    "L": 0.082,
+    "M": 9.1649,
+    "S": 0.10891
+   }
+  },
+  {
+   "x": 11,
+   "lms": {
+    "L": 0.073,
+    "M": 9.4122,
+    "S": 0.10906
+   }
+  },
+  {
+   "x": 12,
+   "lms": {
+    "L": 0.0644,
+    "M": 9.6479,
+    "S": 0.10925
+   }
+  },
+  {
+   "x": 13,
+   "lms": {
+    "L": 0.0563,
+    "M": 9.8749,
+    "S": 0.10949
+   }
+  },
+  {
+   "x": 14,
+   "lms": {
+    "L": 0.0487,
+    "M": 10.0953,
+    "S": 0.10976
+   }
+  },
+  {
+   "x": 15,
+   "lms": {
+    "L": 0.0413,
+    "M": 10.3108,
+    "S": 0.11007
+   }
+  },
+  {
+   "x": 16,
+   "lms": {
+    "L": 0.0343,
+    "M": 10.5228,
+    "S": 0.11041
+   }
+  },
+  {
+   "x": 17,
+   "lms": {
+    "L": 0.0275,
+    "M": 10.7319,
+    "S": 0.11079
+   }
+  },
+  {
+   "x": 18,
+   "lms": {
+    "L": 0.0211,
+    "M": 10.9385,
+    "S": 0.11119
+   }
+  },
+  {
+   "x": 19,
+   "lms": {
+    "L": 0.0148,
+    "M": 11.143,
+    "S": 0.11164
+   }
+  },
+  {
+   "x": 20,
+   "lms": {
+    "L": 0.0087,
+    "M": 11.3462,
+    "S": 0.11211
+   }
+  },
+  {
+   "x": 21,
+   "lms": {
+    "L": 0.0029,
+    "M": 11.5486,
+    "S": 0.11261
+   }
+  },
+  {
+   "x": 22,
+   "lms": {
+    "L": -0.0028,
+    "M": 11.7504,
+    "S": 0.11314
+   }
+  },
+  {
+   "x": 23,
+   "lms": {
+    "L": -0.0083,
+    "M": 11.9514,
+    "S": 0.11369
+   }
+  },
+  {
+   "x": 24,
+   "lms": {
+    "L": -0.0137,
+    "M": 12.1515,
+    "S": 0.11426
+   }
+  }
+ ]
+}

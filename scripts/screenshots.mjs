@@ -33,7 +33,12 @@ for (const device of devices) {
   const ctx = await browser.newContext({ viewport: { width: device.width, height: device.height }, deviceScaleFactor: scale, locale: 'tr-TR', timezoneId: 'Europe/Istanbul', hasTouch: true, isMobile: true });
   const page = await ctx.newPage();
   page.on('pageerror', (e) => console.error('pageerror', e.message));
-  if (fontScale !== 1) await page.addInitScript((s) => { document.documentElement.style.fontSize = `${s * 100}%`; }, fontScale);
+  if (fontScale !== 1)
+    await page.addInitScript((s) => {
+      // documentElement can be null this early; apply once it exists.
+      const apply = () => document.documentElement && (document.documentElement.style.fontSize = `${s * 100}%`);
+      if (!apply()) document.addEventListener('readystatechange', apply, { once: true });
+    }, fontScale);
 
   await page.goto(`${base}/onboarding`);
   await page.waitForSelector('text=Örnek aileyle göz at');
@@ -115,6 +120,13 @@ for (const device of devices) {
   await page.goto(`${base}/add`);
   await page.waitForSelector('text=Ne eklemek istersiniz?');
   await shot(page, '19-add-sheet', device);
+
+  // prototype preview: temporary artwork samples + growth chart prototype
+  await page.goto(`${base}/preview/visuals`);
+  await page.waitForSelector('text=Hafta görselleri');
+  await shot(page, '22-preview-weeks', device);
+  await page.evaluate(() => document.querySelector('[data-testid="growth-chart"]')?.scrollIntoView({ block: 'center' }));
+  await shot(page, '23-preview-growth-chart', device);
 
   // back to pregnancy for manage + birth flows
   await page.goto(`${base}/profiles`);
