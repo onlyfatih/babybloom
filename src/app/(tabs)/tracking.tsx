@@ -1,7 +1,7 @@
 import { errorMessage } from '@/data/errors';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { t } from '@/content/localization';
 import { formatLocalDate, formatMeasurement } from '@/content/localization/format';
 import { deviceTimeZone } from '@/domain/dates/local-date';
@@ -13,7 +13,7 @@ import { KIND_LABEL, MeasurementChart, useMeasurements } from '@/features/measur
 import { profileName, ProfileSwitcherButton, sameRef, useRequiredSession, useSelectedProfile, Profile } from '@/features/profiles';
 import { OfflineBanner } from '@/features/shared/OfflineBanner';
 import { useNow } from '@/features/shared/use-now';
-import { Banner, Card, Chip, Divider, EmptyState, ErrorState, Fab, LoadingState, Screen, SectionHeader, SegmentedControl, Text } from '@/ui/primitives';
+import { Banner, Card, Chip, Divider, EmptyState, ErrorState, Fab, Icon, LoadingState, Screen, SectionHeader, SegmentedControl, Text } from '@/ui/primitives';
 import { colors, layout, spacing } from '@/ui/tokens';
 
 type Segment = 'measurements' | 'appointments';
@@ -82,7 +82,7 @@ function Measurements({ profile }: { profile: Profile | null }) {
             {items.map((m, i) => (
               <View key={m.id}>
                 {i > 0 ? <Divider /> : null}
-                <View style={styles.historyRow} accessible accessibilityLabel={`${formatLocalDate(m.measuredOn)}, ${formatMeasurement(m.canonicalValue, unit)}${m.isBirthMeasurement ? `, ${t('measurement.birthBadge')}` : ''}`}>
+                <Pressable onPress={() => router.push(`/measurement/${m.id}`)} style={styles.historyRow} accessibilityRole="button" accessibilityLabel={`${formatLocalDate(m.measuredOn)}, ${formatMeasurement(m.canonicalValue, unit)}${m.isBirthMeasurement ? `, ${t('measurement.birthBadge')}` : ''}`} testID={`measurement-row-${m.id}`}>
                   <View style={{ flex: 1 }}>
                     <Text variant="bodyStrong">{formatMeasurement(m.canonicalValue, unit)}</Text>
                     <Text variant="caption" color="textSecondary">
@@ -90,7 +90,8 @@ function Measurements({ profile }: { profile: Profile | null }) {
                     </Text>
                   </View>
                   {m.isBirthMeasurement ? <Chip label={t('measurement.birthBadge')} icon="star-outline" /> : null}
-                </View>
+                  <Icon name="chevron-forward" size={18} color="textSecondary" />
+                </Pressable>
               </View>
             ))}
           </Card>

@@ -96,7 +96,15 @@ export interface ProfileRepository {
    * retrying the same submission; a different request after birth is refused.
    */
   recordBirth(pregnancyId: Id, children: Omit<NewChildInput, 'familyId' | 'originPregnancyId'>[], options?: { requestId?: string }): Promise<Child[]>;
+  /** Any active member (profiles are family records). */
+  updateChild(id: Id, patch: ChildPatch): Promise<Child>;
+  /** Owner only. Archived profiles keep every record and can be restored. */
+  setChildArchived(id: Id, archived: boolean): Promise<Child>;
+  /** Replaces (or with null removes) the profile photo; the old photo is queued for deletion. */
+  setChildPhoto(id: Id, photo: LocalPhoto | null): Promise<Child>;
 }
+
+export type ChildPatch = Partial<Pick<Child, 'name' | 'birthDate' | 'birthTime'>>;
 
 export interface LocalPhoto {
   localId: string;
@@ -156,6 +164,8 @@ export interface NewMeasurementInput {
 export interface MeasurementRepository {
   listForChild(childId: Id): Promise<GrowthMeasurement[]>;
   create(input: NewMeasurementInput): Promise<GrowthMeasurement>;
+  /** Correction by the author: value, unit and date. The kind never changes. */
+  update(id: Id, correction: MeasurementCorrection): Promise<GrowthMeasurement>;
   remove(id: Id): Promise<void>;
 }
 

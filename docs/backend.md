@@ -79,7 +79,8 @@ at most twice in 10 minutes (`MAX_LOAD_RETRIES`); after that the item stays a
 placeholder ("Bu fotoğraf şu an gösterilemiyor.") and is not refetched, not even by
 the expiry timer, while that scope's cache remembers the failures.
 Profile photos for new children and births use the avatar slot and
-`set_child_avatar`; replacing an existing child's photo is R4.
+`set_child_avatar`. Replacing or removing an existing child's photo (R4) uses
+the same RPC; it deletes the old media row, which queues the old object.
 
 ## Account deletion and authored records (proposal, needs owner decision, R5)
 

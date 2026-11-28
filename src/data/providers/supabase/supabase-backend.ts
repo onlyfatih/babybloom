@@ -153,6 +153,33 @@ export function createSupabaseBackend(client: Client): Backend {
         }
         return toChild(row);
       },
+      async updateChild(id, patch) {
+        const row = await unwrap(
+          client
+            .from('children')
+            .update({
+              ...(patch.name !== undefined ? { name: patch.name.trim() } : {}),
+              ...(patch.birthDate !== undefined ? { birth_date: patch.birthDate } : {}),
+              ...(patch.birthTime !== undefined ? { birth_time: patch.birthTime } : {}),
+            })
+            .eq('id', id)
+            .select('*')
+            .maybeSingle(),
+        );
+        if (!row) throw new DataError('forbidden'); // RLS: not a member of the child's family (or no such child)
+        return toChild(row);
+      },
+      async setChildArchived(id, archived) {
+        await unwrap(client.rpc('set_child_archived', { p_child_id: id, p_archived: archived }));
+        return toChild(await unwrapData(client.from('children').select('*').eq('id', id).single()));
+      },
+      async setChildPhoto(id, photo) {
+        const row = await unwrap(client.from('children').select('*').eq('id', id).maybeSingle());
+        if (!row) throw new DataError('not-found');
+        if (photo) await attachAvatar(client, row.family_id, id, photo);
+        else await unwrap(client.rpc('set_child_avatar', { p_child_id: id, p_media_id: sqlNull<string>(null) }));
+        return toChild(await unwrapData(client.from('children').select('*').eq('id', id).single()));
+      },
       async recordBirth(pregnancyId, children, options) {
         const ids = await unwrapData(
           client.rpc('record_birth', {
@@ -269,6 +296,19 @@ export function createSupabaseBackend(client: Client): Backend {
             .select('*')
             .single(),
         );
+        return toMeasurement(row);
+      },
+      async update(id, correction) {
+        const row = await unwrap(
+          client
+            .from('growth_measurements')
+            .update({ canonical_value: correction.canonicalValue, entered_unit: correction.enteredUnit, measured_on: correction.measuredOn, ...(correction.note !== undefined ? { note: correction.note } : {}) })
+            .eq('id', id)
+            .select('*')
+            .maybeSingle(),
+        );
+        // RLS: only the author may correct; anyone else updates zero rows.
+        if (!row) throw new DataError('forbidden');
         return toMeasurement(row);
       },
       async remove(id) {

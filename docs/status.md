@@ -2,8 +2,8 @@
 
 _Updated 2026-11-28._ Priority (owner, 2026-11-28): **functional V1 before final
 artwork and editorial content.** Plan and evidence: docs/functional-v1-roadmap.md.
-Branch `functional-v1` (pushed as a backup, no PR). **R0–R3 done on web and
-local integration (native pending R6); R4 next.**
+Branch `functional-v1` (pushed as a backup, no PR). **R0–R4 done on web and
+local integration (native pending R6); R5 next.**
 M3 artwork/content work is deferred to R7.
 
 What is real now (R2): with `EXPO_PUBLIC_BACKEND=supabase` the app signs in
@@ -19,6 +19,13 @@ server-verified uploads, signed URLs that expire after 10 minutes), the
 invitation flow against the server, a shared timeline between two accounts,
 private memories hidden from other members, and revocation that moves the
 removed member out with a notice.
+
+R4 adds, in real mode: pregnancy onboarding and birth (memories kept), child
+profile edit (name, birth date and time), photo replacement and removal,
+archive and restore by the owner, measurement correction and deletion with
+the chart, appointments with an explicit time zone. Steps for running a
+development build on an iPhone from a Mac: docs/iphone-setup.md (written from
+the Expo docs; not tried on Apple hardware).
 
 | Phase | Scope | State |
 | --- | --- | --- |
@@ -103,3 +110,10 @@ invitations, JSON export, settings, prototype failure simulation.
   (integration test). typecheck pass, lint 0 problems, Jest 186/186,
   `npm run test:db` 49/49. Web journeys were not re-run for this commit;
   they run again at the R4 gate.
+- 2026-11-28 (`functional-v1`, R4): typecheck pass, lint 0 problems, Jest
+  186/186 (22 suites), `npm run test:db` 55/55 (new `r4-profiles.test.ts`),
+  R4 real-backend journey 11/11 (`scripts/r4-journey.mjs`), real journey 7/7,
+  sharing journey 10/10, demo journeys 13/13. New screens checked at 320 px
+  with normal and 1.35× text. `npx expo export --platform ios` and
+  `expo prebuild --platform ios` succeed in Linux. Not run: Xcode build,
+  any device, hosted Supabase.

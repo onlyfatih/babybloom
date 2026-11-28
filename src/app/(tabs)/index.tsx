@@ -93,6 +93,12 @@ export default function Today() {
         {selected.kind === 'child' ? (
           <>
             <ChildHeader child={selected.child} today={today} />
+            <Pressable accessibilityRole="button" onPress={() => router.push(`/child/${selected.child.id}`)} style={styles.manageLink} testID="manage-child">
+              <Icon name="create-outline" size={18} color="primary" />
+              <Text variant="label" color="primary">
+                {t('child.manage')}
+              </Text>
+            </Pressable>
             <SectionHeader title={t('today.latestMeasurement')} actionLabel={t('common.seeAll')} onAction={() => router.push('/(tabs)/tracking')} />
             <SectionQueryState query={measurements}>
               {measurements.data?.length ? (

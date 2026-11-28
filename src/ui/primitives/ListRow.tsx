@@ -14,9 +14,10 @@ export interface ListRowProps {
   destructive?: boolean;
   showChevron?: boolean;
   accessibilityHint?: string;
+  testID?: string;
 }
 
-export function ListRow({ title, subtitle, icon, leading, trailing, onPress, destructive, showChevron = !!onPress, accessibilityHint }: ListRowProps) {
+export function ListRow({ title, subtitle, icon, leading, trailing, onPress, destructive, showChevron = !!onPress, accessibilityHint, testID }: ListRowProps) {
   const content = (
     <>
       {leading ?? (icon ? <Icon name={icon} color={destructive ? 'danger' : 'primary'} /> : null)}
@@ -36,7 +37,7 @@ export function ListRow({ title, subtitle, icon, leading, trailing, onPress, des
   );
   if (!onPress) return <View style={styles.row}>{content}</View>;
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityHint={accessibilityHint} style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surfaceMuted }]}>
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityHint={accessibilityHint} testID={testID} style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surfaceMuted }]}>
       {content}
     </Pressable>
   );

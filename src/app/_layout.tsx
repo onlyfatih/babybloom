@@ -114,6 +114,8 @@ function AppNavigator() {
         <Stack.Screen name="memory/[id]" />
         <Stack.Screen name="memory/edit/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="measurement/new" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="measurement/[id]" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="child/[id]" />
         <Stack.Screen name="appointment/new" options={{ presentation: 'modal' }} />
         <Stack.Screen name="appointment/[id]" />
         <Stack.Screen name="family/invite" options={{ presentation: 'modal' }} />

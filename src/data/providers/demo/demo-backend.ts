@@ -222,6 +222,35 @@ const rawDemoBackend: Backend = {
       Object.assign(p, patch, { updatedAt: nowIso() });
       return p;
     },
+    async updateChild(id, patch) {
+      const { actor } = await request();
+      const c = find(state.db.children, id);
+      requireFamily(actor, c.familyId, 'manage-profile');
+      Object.assign(c, patch, { name: (patch.name ?? c.name).trim(), updatedAt: nowIso() });
+      return c;
+    },
+    async setChildArchived(id, archived) {
+      const { actor } = await request();
+      const c = find(state.db.children, id);
+      requireFamily(actor, c.familyId, 'archive-profile');
+      Object.assign(c, { archivedAt: archived ? (c.archivedAt ?? nowIso()) : null, updatedAt: nowIso() });
+      return c;
+    },
+    async setChildPhoto(id, photo) {
+      const { actor } = await request();
+      const c = find(state.db.children, id);
+      requireFamily(actor, c.familyId, 'manage-profile');
+      const old = c.avatarMediaId;
+      c.avatarMediaId = null;
+      if (photo) {
+        const asset: MediaAsset = { id: newId('media'), familyId: c.familyId, storageKey: `local:${photo.uri}`, mimeType: 'image/jpeg', width: photo.width, height: photo.height, byteSize: photo.byteSize, status: 'ready', uploadedBy: actor.userId, createdAt: nowIso() };
+        state.db.media.push(asset);
+        c.avatarMediaId = asset.id;
+      }
+      if (old) state.db.media = state.db.media.filter((m) => m.id !== old);
+      c.updatedAt = nowIso();
+      return c;
+    },
     async createChild(input) {
       const { actor } = await request();
       requireFamily(actor, input.familyId);
@@ -340,6 +369,13 @@ const rawDemoBackend: Backend = {
       requireFamily(actor, input.familyId);
       const m = { id: newId('ms'), ...input, isBirthMeasurement: false, authorId: actor.userId, createdAt: nowIso() };
       state.db.measurements.push(m);
+      return m;
+    },
+    async update(id, correction) {
+      const { actor } = await request();
+      const m = find(state.db.measurements, id);
+      if (!canOnRecord(actor, 'edit', { ...m, visibility: 'family' })) throw new DataError('forbidden');
+      Object.assign(m, { canonicalValue: correction.canonicalValue, enteredUnit: correction.enteredUnit, measuredOn: correction.measuredOn, note: correction.note ?? m.note ?? null, updatedAt: nowIso() });
       return m;
     },
     async remove(id) {

@@ -61,7 +61,8 @@ export function useSelectedProfile() {
   const profilesQuery = useProfiles(session?.family.id);
   const prefs = usePreferences(session?.user.id);
   const profiles = profilesQuery.data?.profiles ?? [];
-  const active = profiles.filter((p) => p.kind === 'child' || p.pregnancy.status === 'active');
+  // Archived profiles stay listed but are never picked automatically.
+  const active = profiles.filter((p) => (p.kind === 'child' ? !p.child.archivedAt : p.pregnancy.status === 'active'));
   const selected = profiles.find((p) => sameRef(p.ref, prefs.data?.selectedProfile)) ?? active[0] ?? profiles[0] ?? null;
   return {
     selected,

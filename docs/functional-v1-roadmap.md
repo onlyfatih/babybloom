@@ -66,20 +66,37 @@ Not in R2 (deliberately): photos in real mode are hidden (`capabilities.photos =
 
 | ID | Task | Owner | Dep | Acceptance | Verify | Status | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| R3.1 | Async media resolution | Claude | R2.2 | Signed URL with expiry; cached per scope; refresh before expiry; reload on load error; missing/revoked → placeholder | `npx jest __tests__/features/media-source-test.ts`; `npm run test:db` (media-service) | ✅ | `resolveMedia` in both providers; `src/features/media/use-media-source.ts`; sync `mediaSource` removed |
+| R3.1 | Async media resolution | Claude | R2.2 | Signed URL with expiry; cached per scope; refresh before expiry; reload on load error (at most 2 retries / 10 min, then a lasting placeholder: review fix 3ecaf9f); missing/revoked → placeholder | `npx jest __tests__/features/media-source-test.tsx`; `npm run test:db` (media-service) | ✅ | `resolveMedia` in both providers; `src/features/media/use-media-source.ts`; sync `mediaSource` removed |
 | R3.2 | Photo upload lifecycle in real mode | Claude | R3.1 | validate → reserve → upload → server verify → finalize; processed size; retry into the same slot; save blocked while photos are prepared | `npm run test:db` (media-service); sharing journey step 2 | ✅ | Server stores the real object size (test); orphan cleanup job is R5 |
-| R3.3 | Profile photo on child creation and birth | Claude | R3.2 | Verified avatar upload; retry does not duplicate | `npm run test:db` (media-service) | ✅ | `attachAvatar` in `supabase-backend.ts`. Replacing an existing photo: R4 |
+| R3.3 | Profile photo on child creation and birth | Claude | R3.2 | Verified avatar upload; retry does not duplicate | `npm run test:db` (media-service) | ✅ | `attachAvatar` in `supabase-backend.ts`. Replacing an existing photo: R4.3 |
 | R3.4 | Invitation UI against the server | Claude | R2.3 | Code shown once, single use, join from the no-family screen | sharing journey steps 3–4 | ✅ | `family/invite.tsx`, `onboarding/join.tsx` |
 | R3.5 | Shared timeline, private memories | Claude | R3.4 | B sees A's family memory and photo; never A's private memory (UI, data call, storage) | sharing journey 5–7; `npm run test:db` | ✅ | UI: journey; direct data and storage paths: `access.test.ts`, `media-service.test.ts` |
 | R3.6 | Revocation in the UI | Claude | R3.4 | Revoked member leaves the family view with a notice, both in a running app and on a cold start; no new media URLs | sharing journey 8–10; `npm run test:db` | ✅ | Refused requests trigger a session re-check; foreground and 5-minute checks; notice derived from revoked memberships |
 
 Known limits: a signed URL issued before a revocation works until it expires (≤ 10 min). Photos already shown stay in the device's image cache until the app clears it.
 
-## R3–R7
+R3 review fixes (commit 3ecaf9f): a refresh racing a sign-out can no longer
+make the old session ready again (4 regression tests in
+`__tests__/session/session-test.ts`); bounded photo retries (above);
+`updatePregnancy` matching no row rejects with `DataError('forbidden')`.
+
+## R4: Profiles, measurements, appointments in real mode (exit: journeys without demo dependencies) — ✅ (web + integration; native pending R6)
+
+| ID | Task | Owner | Dep | Acceptance | Verify | Status | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R4.1 | Pregnancy onboarding and birth in real mode | Claude | R3 | Pregnancy created on the server; birth creates the child (retry-safe), marks the pregnancy born and keeps its memories | `npm run test:db` (r4-profiles); R4 journey steps 2–4 | ✅ | Existing screens; `record_birth` retry returns the same child |
+| R4.2 | Profile switch and edit | Claude | R4.1 | Switch between children; edit name, birth date and time with validation; another family cannot edit | R4 journey 5–6; `npm run test:db` | ✅ | `src/app/child/[id].tsx`, "Profili düzenle" link on Today |
+| R4.3 | Photo replacement and removal | Claude | R3.3 | New photo verified on the server; old object queued for deletion and no longer served; removal works | `npm run test:db` (r4-profiles); R4 journey 7 | ✅ | `setChildPhoto` (both providers); `set_child_avatar` deletes the old media row |
+| R4.4 | Archive and restore (owner) | Claude | R4.2 | Owner only (server); records stay; archived label; never auto-selected | `npm run test:db`; R4 journey 8 | ✅ | `set_child_archived`; `useSelectedProfile` skips archived children |
+| R4.5 | Measurement correction, delete, chart | Claude | R2 | Author corrects (kind fixed, "corrected on" date); author or owner deletes; chart from two values | `npm run test:db`; R4 journey 9 | ✅ | `MeasurementForm`, `measurement/[id].tsx`, `measurements.update` |
+| R4.6 | Appointments | Claude | R2 | Explicit IANA time zone stored and shown; create/edit/delete; only the author edits; private ones hidden; no reminder toggles | `npm run test:db`; R4 journey 10 | ✅ | Existing form; calendar export stays off (flag) |
+| R4.7 | End-to-end without demo | Claude | R4.1–R4.6 | One real-backend journey covers R4.1–R4.6 and a reload | `node scripts/r4-journey.mjs http://localhost:8082 http://127.0.0.1:54324` | ✅ | 11/11 on 2026-11-28 |
+| R4.8 | iPhone setup steps for the owner's Mac | Claude | – | Steps from SDK 58 docs; what was checked stated | docs/iphone-setup.md | 🟡 | iOS bundle and Xcode project generation checked in Linux; **not run on a Mac or iPhone** |
+
+## R5–R7
 
 | Gate | Scope | Status | Blocking reason |
 | --- | --- | --- | --- |
-| R4 | Pregnancy onboarding + birth UI, profile switch/edit/archive, measurement correction + chart, appointments | ⬜ | – |
 | R5 | Export package (manifest, media), deletion flows, ownership transfer UI, storage deletion worker, backup/restore drill | ⬜ | Account deletion and authored-record retention rule needs an owner decision (proposal in docs/backend.md) |
 | R6 | iOS/Android dev + release builds, real devices, accessibility, CI | ⬜ | Needs the owner's Apple/Google accounts and a device; EAS may need a plan decision |
 | R7 | Final artwork, weekly content, animation, validated reference graphs | Deferred | Deferred by the owner until functional V1 acceptance |

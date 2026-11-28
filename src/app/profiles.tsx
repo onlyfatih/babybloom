@@ -18,6 +18,7 @@ export default function ProfileSwitcher() {
 
   const subtitle = (p: Profile) => {
     if (p.kind === 'child') {
+      if (p.child.archivedAt) return `${t('profile.childLabel')} · ${t('profile.archivedLabel')}`;
       const age = childAge(p.child.birthDate, today);
       return `${t('profile.childLabel')} · ${age ? formatAge(age) : ''}`;
     }
