@@ -27,6 +27,8 @@ export class SessionController {
   private unsubscribe: (() => void) | null = null;
   private previousFamilyId: string | null = null;
   private latest: Promise<void> = Promise.resolve();
+  /** Set while signOut() runs: refreshes wait for it instead of reading an identity that is being removed. */
+  private signingOut: Promise<void> | null = null;
 
   constructor(private readonly options: SessionControllerOptions) {}
 
@@ -62,7 +64,14 @@ export class SessionController {
    * if this call's own result was superseded.
    */
   refresh(): Promise<void> {
-    const run = this.resolve(++this.generation);
+    if (this.signingOut) return this.signingOut;
+    const gen = ++this.generation;
+    const run: Promise<void> = this.resolve(gen).then(() => {
+      if (gen === this.generation) return;
+      // Superseded: wait for whatever owns the state now (never for itself).
+      if (this.signingOut) return this.signingOut;
+      if (this.latest !== run) return this.latest;
+    });
     this.latest = run;
     return run;
   }
@@ -87,18 +96,40 @@ export class SessionController {
         }
       }
     } catch (e) {
-      if (gen !== this.generation) return this.latest;
+      if (gen !== this.generation) return;
       next = { kind: 'recoverable-error', error: e instanceof DataError && e.code === 'offline' ? 'offline' : 'bootstrap-failed', identity: who };
     }
-    if (gen !== this.generation) return this.latest; // a newer resolution owns the state
-    await this.publish(next);
+    if (gen !== this.generation) return; // a newer resolution owns the state
+    await this.publish(next, gen);
   }
 
-  /** Signs this device out. Keeps all server and local records. */
-  async signOut(): Promise<void> {
+  /**
+   * Signs this device out. Keeps all server and local records.
+   *
+   * Every resolution that is in flight (or that starts while the backend is
+   * still removing the session and could read the old identity) is dropped:
+   * the generation moves before and after the backend call, and refresh()
+   * joins this promise instead of starting a new resolution.
+   */
+  signOut(): Promise<void> {
+    this.signingOut ??= this.runSignOut().finally(() => {
+      this.signingOut = null;
+    });
+    return this.signingOut;
+  }
+
+  private async runSignOut(): Promise<void> {
     this.generation += 1;
-    await this.options.backend.identity.signOut();
-    await this.publish({ kind: 'signed-out', reason: 'signed-out' });
+    try {
+      await this.options.backend.identity.signOut();
+    } catch (e) {
+      // The session may still be there: re-read it rather than claim a sign-out.
+      this.signingOut = null;
+      await this.refresh();
+      throw e;
+    }
+    const gen = ++this.generation;
+    await this.publish({ kind: 'signed-out', reason: 'signed-out' }, gen);
   }
 
   async selectFamily(familyId: string): Promise<void> {
@@ -106,11 +137,13 @@ export class SessionController {
     await this.refresh();
   }
 
-  private async publish(next: SessionState): Promise<void> {
+  private async publish(next: SessionState, gen: number): Promise<void> {
     const prevScope = sessionScope(this.state);
     const nextScope = sessionScope(next);
     if (!sameScope(prevScope, nextScope) && this.state.kind !== 'bootstrapping') {
       await this.options.onScopeChange(prevScope, nextScope);
+      // A newer resolution (or a sign-out) started while the cache was being cleared.
+      if (gen !== this.generation) return;
     }
     if (next.kind === 'ready' || next.kind === 'authenticated-with-family-without-profile') this.previousFamilyId = next.current.family.id;
     if (next.kind === 'signed-out') this.previousFamilyId = null;

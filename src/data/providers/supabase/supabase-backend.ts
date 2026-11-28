@@ -116,7 +116,7 @@ export function createSupabaseBackend(client: Client): Backend {
         return toPregnancy(data);
       },
       async updatePregnancy(id, patch) {
-        const row = await unwrapData(
+        const row = await unwrap(
           client
             .from('pregnancies')
             .update({
@@ -130,9 +130,9 @@ export function createSupabaseBackend(client: Client): Backend {
             .eq('id', id)
             .select('*')
             .maybeSingle(),
-        ).catch((e: unknown) => {
-          throw toDataError(e);
-        });
+        );
+        // RLS hides rows the caller may not change (other family, revoked, missing): no row, never a mapped null.
+        if (!row) throw new DataError('forbidden');
         return toPregnancy(row);
       },
       async createChild(input, options) {

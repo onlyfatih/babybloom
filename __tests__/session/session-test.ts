@@ -60,6 +60,8 @@ function fakeBackend() {
     failNext: null as Error | null,
     delayFor: null as string | null,
     release: null as null | (() => void),
+    /** When set, signOut() waits for this before removing the identity (like a network revoke). */
+    holdSignOut: null as null | Promise<void>,
     setUser(u: AuthIdentity | null) {
       who = u;
     },
@@ -81,6 +83,7 @@ function fakeBackend() {
       verifyEmailCode: async () => me,
       signOut: async () => {
         b.signOuts += 1;
+        if (b.holdSignOut) await b.holdSignOut;
         who = null;
       },
       setForeground: () => undefined,
@@ -171,6 +174,77 @@ describe('SessionController', () => {
     expect(c.current).toEqual({ kind: 'signed-out', reason: 'signed-out' });
     // Nothing to clear when leaving bootstrapping; on sign-out the cache is cleared while u1's state is still current.
     expect(calls).toEqual(['clear u1→- while state=ready']);
+  });
+
+  // Regression (R3 review): a refresh racing a sign-out made the session ready again.
+  it('a refresh during sign-out cannot bring the old session back', async () => {
+    const { b, backend } = fakeBackend();
+    b.setUser(me);
+    b.memberships = [ms('f1')];
+    const c = new SessionController({ backend, onScopeChange: () => undefined });
+    await c.start();
+    let finish!: () => void;
+    b.holdSignOut = new Promise<void>((r) => (finish = r));
+    const out = c.signOut();
+    // The backend still returns the old identity while it revokes the session.
+    const during = [c.refresh(), new Promise<void>((r) => setTimeout(r, 0)).then(() => b.emit({ type: 'token-refreshed', identity: me }))];
+    finish();
+    await out;
+    await Promise.all(during);
+    await new Promise((r) => setTimeout(r, 0));
+    await c.refresh();
+    expect(c.current).toEqual({ kind: 'signed-out', reason: 'signed-out' });
+  });
+
+  it('a refresh that started before sign-out and finishes after it is discarded', async () => {
+    const { b, backend } = fakeBackend();
+    b.setUser(me);
+    b.memberships = [ms('f1')];
+    const c = new SessionController({ backend, onScopeChange: () => undefined });
+    await c.start();
+    b.delayFor = 'u1';
+    const stale = c.refresh(); // stuck in listMine with u1's identity
+    await new Promise((r) => setTimeout(r, 0));
+    await c.signOut();
+    b.release?.();
+    await stale;
+    expect(c.current).toEqual({ kind: 'signed-out', reason: 'signed-out' });
+  });
+
+  it('a resolution whose cache clear outlives a sign-out does not publish', async () => {
+    const { b, backend } = fakeBackend();
+    b.setUser(other);
+    b.memberships = [ms('f1')];
+    let slowClear: (() => void) | null = null;
+    const c = new SessionController({
+      backend,
+      onScopeChange: async (_p, n) => {
+        if (n?.userId === 'u1') await new Promise<void>((r) => (slowClear = r));
+      },
+    });
+    await c.start(); // ready as u2
+    b.setUser(me);
+    const switching = c.refresh(); // u2 → u1, blocked while clearing u2's cache
+    await new Promise((r) => setTimeout(r, 0));
+    expect(slowClear).not.toBeNull();
+    const out = c.signOut();
+    await new Promise((r) => setTimeout(r, 0));
+    (slowClear as unknown as () => void)();
+    await Promise.all([out, switching]);
+    expect(c.current).toEqual({ kind: 'signed-out', reason: 'signed-out' });
+  });
+
+  it('a failed sign-out re-reads the session instead of claiming signed-out', async () => {
+    const { b, backend } = fakeBackend();
+    b.setUser(me);
+    b.memberships = [ms('f1')];
+    backend.identity.signOut = async () => {
+      throw new DataError('offline');
+    };
+    const c = new SessionController({ backend, onScopeChange: () => undefined });
+    await c.start();
+    await expect(c.signOut()).rejects.toMatchObject({ code: 'offline' });
+    expect(c.current.kind).toBe('ready');
   });
 
   it('a session that disappears is reported as expired, not as a sign-out', async () => {

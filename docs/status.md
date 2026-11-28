@@ -92,3 +92,14 @@ invitations, JSON export, settings, prototype failure simulation.
   invitation, join, shared memory and photo, private memory hidden, B's memory
   visible to A, revocation in a running app and on a cold start). Not run:
   native builds, devices, hosted Supabase.
+- 2026-11-28 (`functional-v1`, R3 review fixes): (1) a refresh racing a
+  sign-out could publish the old session as ready again; SessionController
+  now drops resolutions in flight during and after sign-out, joins refreshes
+  to the pending sign-out and re-checks the generation after the cache clear
+  (4 regression tests; 3 of them fail on the previous controller). (2) a
+  photo that fails to load is refetched at most twice in 10 minutes, then
+  stays a placeholder (hook test counts requests). (3) `updatePregnancy`
+  that matches no row rejects with `DataError('forbidden')` before mapping
+  (integration test). typecheck pass, lint 0 problems, Jest 186/186,
+  `npm run test:db` 49/49. Web journeys were not re-run for this commit;
+  they run again at the R4 gate.

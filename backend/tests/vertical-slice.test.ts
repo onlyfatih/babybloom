@@ -115,6 +115,17 @@ describe('R2 vertical slice (real persistence)', () => {
     expect((await app.profiles.list(familyId)).pregnancies).toHaveLength(1);
   });
 
+  // R3 review: an update that RLS filters to zero rows must be a DataError, never a mapped null.
+  it('updating a pregnancy the user cannot change rejects with forbidden', async () => {
+    const owner = await signInWithCode(email('preg-owner'));
+    const familyId = await owner.backend.memberships.createFamily({ familyName: 'Kurgu', displayName: 'Ali', relationshipLabel: 'Baba' });
+    const mine = await createSupabaseBackend(owner.device.client).profiles.createPregnancy({ familyId, nickname: 'Fıstık', clinicianDueDate: '2027-03-01' as LocalDate, lastMenstrualPeriod: null });
+    const stranger = createSupabaseBackend((await signInWithCode(email('preg-stranger'))).device.client);
+    await expect(stranger.profiles.updatePregnancy(mine.id, { nickname: 'X' })).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(stranger.profiles.updatePregnancy(randomUUID(), { nickname: 'X' })).rejects.toMatchObject({ code: 'forbidden' });
+    expect((await createSupabaseBackend(owner.device.client).profiles.list(familyId)).pregnancies[0]!.nickname).toBe('Fıstık');
+  });
+
   it('maps server refusals to DataError codes the UI understands', async () => {
     const { device } = await signInWithCode(email('stranger'));
     const app = createSupabaseBackend(device.client);

@@ -10,4 +10,6 @@ export const queryKeys = {
   invitations: (familyId: string) => ['invitations', familyId] as const,
   preferences: (userId: string) => ['preferences', userId] as const,
   media: (mediaId: string) => ['media', mediaId] as const,
+  /** Client-side record of failed image loads for one media item (never fetched). */
+  mediaLoadFailures: (mediaId: string) => ['media-load-failures', mediaId] as const,
 };

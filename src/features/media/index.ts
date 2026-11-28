@@ -1,1 +1,1 @@
-export { useMediaSource, useMediaSources, msUntilRefresh, REFRESH_MARGIN_MS, type MediaState } from './use-media-source';
+export { useMediaSource, useMediaSources, msUntilRefresh, recordLoadFailure, hasGivenUp, MAX_LOAD_RETRIES, FAILURE_WINDOW_MS, REFRESH_MARGIN_MS, type MediaState } from './use-media-source';

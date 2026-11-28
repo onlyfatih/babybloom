@@ -74,7 +74,10 @@ must be ≤ 5 MB. `MemoryRepository.resolveMedia` returns a signed URL with its
 expiry, or `null` for missing, deleted, pending or not-visible media (one
 answer for all, so private photos do not leak their existence).
 `useMediaSource` (src/features/media) caches per (user, family) scope,
-refreshes 60 s before expiry and refetches once when an image fails to load.
+refreshes 60 s before expiry. When an image fails to load it asks for a new URL
+at most twice in 10 minutes (`MAX_LOAD_RETRIES`); after that the item stays a
+placeholder ("Bu fotoğraf şu an gösterilemiyor.") and is not refetched, not even by
+the expiry timer, while that scope's cache remembers the failures.
 Profile photos for new children and births use the avatar slot and
 `set_child_avatar`; replacing an existing child's photo is R4.
 
