@@ -1,8 +1,8 @@
 # Permissions
 
 Source of truth for the rules. Client mirror: `src/domain/permissions/permissions.ts`
-(tests: `__tests__/domain/permissions-test.ts`). Server enforcement: RLS in
-`backend/supabase/migrations/` (draft, P3). The client mirror only decides
+(tests: `__tests__/domain/permissions-test.ts`). Server enforcement: RLS, RPCs and Storage
+policies in `backend/supabase/migrations/`. The client mirror only decides
 what the UI offers; it is not authorization. Feature flags never grant access.
 
 ## Roles
@@ -29,8 +29,10 @@ counts and exports, and a direct id lookup returns `not-found`.
 | View pregnancy / child / measurements | ✓ | |
 | Create and edit profile details, dating, record birth | ✓ | |
 | Add measurement | ✓ | |
+| Correct (edit) measurement | author | |
 | Delete measurement | author | or owner |
 | Archive profile | | ✓ |
+| Delete profile | | – (V1: only by deleting the family) |
 
 ## Family actions
 
@@ -51,7 +53,12 @@ Exports contain only what the exporting user can view, for the profiles they
 selected, plus memories of a child's origin pregnancy when that child is
 selected (`selectForExport` in `src/domain/permissions/export-selection.ts`).
 
+Invitations always grant the adult role; owner only through transfer. See
+docs/backend.md § Product rules for rejoin and already-member behaviour.
+
 ## Verified so far
 
-Unit tests of the client mirror and demo provider (private hidden from owner,
-revoked member blocked). No RLS policy test has run; there is no database yet.
+- Client mirror and demo provider: unit tests.
+- Server (R1): RLS, RPC and Storage policies tested against the local
+  Supabase stack with real user sessions, `npm run test:db` (40 tests,
+  docs/backend.md § Tests). Not yet run against a hosted project.

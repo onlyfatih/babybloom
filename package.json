@@ -7,6 +7,7 @@
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@supabase/supabase-js": "^2.119.2",
     "@tanstack/react-query": "^5.108.4",
     "expo": "~58.1.0",
     "expo-constants": "~58.0.16",
@@ -35,10 +36,12 @@
   "devDependencies": {
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "^30.0.0",
+    "@types/pg": "^8.23.1",
     "@types/react": "~19.3.0",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~58.0.0",
     "jest": "^30.5.2",
+    "pg": "^8.23.1",
     "supabase": "^2.122.1",
     "typescript": "~6.0.3"
   },
@@ -53,7 +56,8 @@
     "screenshots": "node scripts/screenshots.mjs",
     "export:web": "expo export --platform web --output-dir dist",
     "serve:web": "node scripts/serve-web.mjs dist 8081",
-    "journeys": "node scripts/web-journeys.mjs http://localhost:8081"
+    "journeys": "node scripts/web-journeys.mjs http://localhost:8081",
+    "test:db": "bash scripts/test-db.sh"
   },
   "private": true,
   "jest": {

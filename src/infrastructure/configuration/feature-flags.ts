@@ -19,8 +19,9 @@ export interface FeatureFlags {
 }
 
 const defaults: Record<typeof appEnvironment, FeatureFlags> = {
-  prototype: { showDemoContent: true, calendarExport: false, prototypeTools: true, premiumFeatures: false },
-  development: { showDemoContent: true, calendarExport: false, prototypeTools: true, premiumFeatures: false },
+  demo: { showDemoContent: true, calendarExport: false, prototypeTools: true, premiumFeatures: false },
+  // Development against a real backend shows no fictional weekly content.
+  development: { showDemoContent: false, calendarExport: false, prototypeTools: true, premiumFeatures: false },
   production: { showDemoContent: false, calendarExport: false, prototypeTools: false, premiumFeatures: false },
 };
 

@@ -1,6 +1,6 @@
 # Change guide
 
-Where to make common changes. After any change: `npm run typecheck && npm run lint && npm test`.
+Where to make common changes. After any change: `npm run typecheck && npm run lint && npm test`; after backend changes also `npm run test:db` (local stack running).
 
 | I want to… | Edit | Also |
 | --- | --- | --- |
@@ -41,5 +41,10 @@ Where to make common changes. After any change: `npm run typecheck && npm run li
 | Change error messages for data errors | `src/data/errors.ts` + `errors.*` keys in `tr.ts` | |
 | Change app name, bundle id, permissions text | `app.json` | Permission strings are Turkish |
 | Add a native library | `EXPO_OFFLINE=1 npx expo install <pkg>` if api.expo.dev is blocked; check it exists in Expo Go or note the dev-build need in architecture.md | |
-| Add the real backend | new folder `src/data/providers/supabase/`, mapping in `src/data/mapping/`, choose provider in `src/data/backend.tsx` | ADR-004, ADR-005 |
+| Change the database (table, column, constraint, policy, RPC) | new file `backend/supabase/migrations/<timestamp>_<name>.sql` (never edit an applied one) → `npx supabase db reset --workdir backend` → `npx supabase gen types typescript --local --workdir backend > src/data/providers/supabase/database.types.ts` | Add/adjust `backend/tests/*.test.ts`, run `npm run test:db`; docs/backend.md |
+| Change who can read/write on the server | RLS policy or RPC check in a new migration; mirror in `src/domain/permissions/permissions.ts` and docs/permissions.md | Negative test in `backend/tests/access.test.ts` |
+| Change sign-in / session behaviour | `src/data/providers/supabase/session-backend.ts` (Supabase calls), `src/data/session/session-controller.ts` (states) | `__tests__/session/session-test.ts`, `backend/tests/session.test.ts`, docs/auth.md |
+| Change sign-in email text | `backend/supabase/templates/sign-in-code.html` (keep `{{ .Token }}`); hosted: paste into Auth → Email Templates | docs/auth.md |
+| Change environment / backend selection | `src/infrastructure/configuration/app-config.ts`, `.env.example` | Config tests in `__tests__/session/session-test.ts` |
+| Add the real backend repositories | `src/data/providers/supabase/` (map rows to domain types there), choose provider in `src/data/backend.tsx` | ADR-004; integration test in `backend/tests/` |
 | Change import boundaries | `eslint.config.js` | |

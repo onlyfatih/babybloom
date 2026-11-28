@@ -1,5 +1,8 @@
 # Milestone M3: Pregnancy Visuals and Growth References
 
+> **2026-11-28: deferred to R7** of docs/functional-v1-roadmap.md by the owner
+> (functional V1 first). Nothing below is being worked on until then.
+
 _Opened 2026-11-27 at the owner's request. Status: **samples waiting for the
 owner's final-quality approval; data preparation continuing.** Not complete:
 artwork (3 of 37 weeks, temporary), data coverage (prototype WHO weight only),

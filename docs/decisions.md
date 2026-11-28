@@ -52,3 +52,11 @@ light, procedural texture) rendered offline to PNG/WebP; the app ships rasters
 and animates them with transforms only (sway, light), so native SVG filter
 support does not matter. Alternative if the owner wants painterly realism:
 commission an illustrator from the production brief in milestone-visuals-growth.md.
+
+## ADR-011 Functional V1 first; email one-time code; local-first Supabase (2026-11-28, accepted by owner's brief)
+The owner reprioritized: functional V1 before final artwork and editorial
+content (R0–R6, docs/functional-v1-roadmap.md); M3 visual work moves to R7.
+Supabase (ADR-005) is now active **locally** only. Authentication uses one
+method, email one-time code (docs/auth.md). Lifecycle changes go through
+security-definer RPCs; plain records use RLS-protected client calls.
+Supersedes the approval gate in ADR-010 for implementation order only.

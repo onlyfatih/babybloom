@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BackendProvider } from '@/data/backend';
+import { ConfigurationGate } from '@/features/configuration/ConfigurationGate';
 import { useSession } from '@/features/profiles';
 import { DataError } from '@/data/repositories/types';
 import { colors, fontFamilies } from '@/ui/tokens';
@@ -36,10 +37,12 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <BackendProvider>
-          <StatusBar style="dark" />
-          <AppNavigator />
-        </BackendProvider>
+        <StatusBar style="dark" />
+        <ConfigurationGate>
+          <BackendProvider>
+            <AppNavigator />
+          </BackendProvider>
+        </ConfigurationGate>
       </QueryClientProvider>
     </SafeAreaProvider>
   );

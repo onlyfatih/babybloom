@@ -32,7 +32,8 @@ export interface FamilyMembership {
   role: FamilyRole;
   /** e.g. "Anne", "Baba", "Babaanne" – free text the family chooses. */
   relationshipLabel: string;
-  status: 'active' | 'revoked';
+  /** 'left': the member left on their own; 'revoked': an owner removed them. */
+  status: 'active' | 'revoked' | 'left';
   joinedAt: Instant;
   revokedAt: Instant | null;
 }

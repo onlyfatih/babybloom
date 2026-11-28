@@ -415,6 +415,11 @@ export const tr = {
     methodBirth: 'Doğumda',
     axisMonths: 'yaş (ay)',
   },
+  config: {
+    title: 'Uygulama başlatılamadı',
+    invalid: 'Bu sürümün sunucu ayarları eksik ya da hatalı. Lütfen uygulamanın güncel sürümünü yükleyin.',
+    backendNotConnected: 'Bu geliştirme sürümünde gerçek sunucu bağlantısı henüz ekranlara bağlanmadı. Örnek verilerle denemek için demo ortamını kullanın.',
+  },
   preview: {
     title: 'Görsel önizleme',
     weeksTitle: 'Hafta görselleri',

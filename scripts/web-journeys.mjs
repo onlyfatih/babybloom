@@ -32,7 +32,8 @@ async function journey(name, fn) {
   }
 }
 const gone = (text) => page.getByText(text, { exact: false }).first().waitFor({ state: 'detached', timeout: 8000 });
-const see = (text, timeout = 8000) => page.getByText(text, { exact: false }).first().waitFor({ timeout });
+// Visible matches only: screens lower in the navigation stack stay mounted but hidden.
+const see = (text, timeout = 8000) => page.getByText(text, { exact: false }).filter({ visible: true }).first().waitFor({ timeout });
 
 await journey('1. Start a pregnancy profile (validation, then success)', async () => {
   await page.goto(`${base}/onboarding`);

@@ -1,15 +1,23 @@
 # Status
 
-_Updated 2026-11-27._ Phase: **P2 done, waiting for the owner's visual approval.** P3 not started.
-Milestone M3 (pregnancy visuals, growth references) in progress on branch
-`visuals-growth-references`; see docs/milestone-visuals-growth.md.
+_Updated 2026-11-28._ Priority (owner, 2026-11-28): **functional V1 before final
+artwork and editorial content.** Plan and evidence: docs/functional-v1-roadmap.md.
+Branch `functional-v1` (local, not pushed). **R0 and R1 done; R2 next.**
+M3 artwork/content work is deferred to R7.
+
+What is real now (R1): a reviewed database schema, RLS, transactional RPCs and
+a private storage bucket, tested against a **local** Supabase stack with real
+user sessions (40 integration tests), plus the client-side session model,
+email-code sign-in adapter and validated configuration. What is **not** real
+yet: the app screens still run on the on-device demo provider; a `supabase`
+build stops at a clear configuration screen until R2 connects the screens.
 
 | Phase | Scope | State |
 | --- | --- | --- |
 | P0 | Architecture docs, data model, permission matrix, date and content rules | Done (this folder) |
 | P1 | Working prototype on fictional local data | Done |
 | P2 | Visual refinement via screenshots at 320/393 px and 1.35× text | Done, awaiting approval |
-| P3 | Supabase backend, auth, RLS tests, private storage | Not started; needs approval (account, possible cost) |
+| P3 | Supabase backend, auth, RLS tests, private storage | Superseded by functional-v1-roadmap.md (R1 done locally, no hosted project) |
 | P4 | Native verification, notifications, calendar export (dev build) | Not started |
 | P5 | Content review, EAS builds, store prep | Not started |
 
@@ -35,8 +43,8 @@ invitations, JSON export, settings, prototype failure simulation.
   docs/handoff-growth-data.md.
 
 ## Known limitations
-- No backend: data lives in AsyncStorage on one device; "family" is simulated.
-- Permission checks run on the client only. Nothing is authorized by a server.
+- The app screens still use the demo provider: data lives in AsyncStorage on one device; "family" is simulated. The server side exists and is tested locally, but no screen calls it yet (R2).
+- In the demo provider, permission checks run on the client only. The real server rules are enforced and tested only in the local Supabase stack so far.
 - No encryption beyond what the OS provides. Not end-to-end encrypted.
 - Weekly content: 6 demo weeks, not medically reviewed. Other weeks are empty.
 - Notifications are preferences only; nothing is sent.
@@ -53,3 +61,9 @@ invitations, JSON export, settings, prototype failure simulation.
   screenshots at 320/393 px and at 1.35× text including the preview screen,
   review page `node preview/artifact/build.mjs --check` pass. Not run: any
   native device or simulator.
+- 2026-11-28 (`functional-v1`): typecheck pass, lint 0 problems, Jest 162/162
+  (18 suites), `npm run test:db` 40/40 against the local Supabase stack (run
+  repeatedly; two deliberately weakened policies were caught), web journeys
+  13/13 on the demo build, production web build with no backend config shows
+  only the configuration screen on /, /onboarding, /preview/visuals,
+  /settings. Not run: native builds, devices, hosted Supabase.
