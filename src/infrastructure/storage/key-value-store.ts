@@ -8,4 +8,5 @@ export const keyValueStore = {
   get: (key: string) => AsyncStorage.getItem(key),
   set: (key: string, value: string) => AsyncStorage.setItem(key, value),
   remove: (key: string) => AsyncStorage.removeItem(key),
+  keys: () => AsyncStorage.getAllKeys(),
 };

@@ -1,5 +1,5 @@
 import { router, Stack } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { t } from '@/content/localization';
 import { errorMessage } from '@/data/errors';
@@ -7,7 +7,9 @@ import { DataError } from '@/data/repositories/types';
 import { LocalDate, addDays } from '@/domain/dates/local-date';
 import { MAX_BODY_LENGTH, MAX_PHOTOS_PER_MEMORY, MAX_TITLE_LENGTH, MemoryValidationError, validateMemoryDraft } from '@/domain/memories/memory-rules';
 import type { Memory, ProfileRef, Visibility } from '@/domain/model';
-import { drafts } from '@/infrastructure/storage/drafts';
+import { draftKey as buildDraftKey } from '@/infrastructure/storage/drafts';
+import { useRequiredSession } from '@/features/profiles';
+import { useFormDraft } from '@/features/shared/use-form-draft';
 import { useBackend } from '@/data/backend';
 import { useUnsavedGuard } from '@/features/shared/use-unsaved-guard';
 import { useToday } from '@/features/shared/use-today';
@@ -33,7 +35,11 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
   const backend = useBackend();
   const today = useToday();
   const save = useSaveMemory();
-  const draftKey = existing ? `memory-edit-${existing.id}` : `memory-new-${subject.kind === 'child' ? subject.childId : subject.pregnancyId}`;
+  const session = useRequiredSession();
+  // Drafts only for new memories; edits start from the saved record.
+  const draftKey = existing
+    ? null
+    : buildDraftKey({ userId: session.user.id, familyId, profile: subject.kind === 'child' ? `child:${subject.childId}` : `pregnancy:${subject.pregnancyId}`, purpose: 'memory-new' });
 
   const initial: DraftShape = useMemo(
     () => ({ title: existing?.title ?? '', body: existing?.body ?? '', eventDate: existing?.eventDate ?? today, visibility: existing?.visibility ?? 'family' }),
@@ -47,30 +53,12 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
   const [phase, setPhase] = useState<'idle' | 'uploading' | 'finalizing' | 'saved'>('idle');
   const [banner, setBanner] = useState<{ tone: 'danger' | 'warning' | 'info' | 'success'; message: string } | null>(null);
   const [partial, setPartial] = useState<{ uploaded: string[]; failed: number } | null>(null);
-  const [draftRestored, setDraftRestored] = useState(false);
-  const formRef = useRef(form);
-  useEffect(() => {
-    formRef.current = form;
-  }, [form]);
-
-  // Restore a draft for new memories.
-  useEffect(() => {
-    if (existing) return;
-    drafts.load<DraftShape>(draftKey).then((d) => {
-      if (!d || !(d.title || d.body)) return;
-      // Never overwrite what the user already typed while the draft was loading.
-      if (formRef.current.title || formRef.current.body) return;
-      setForm(d);
-      setDraftRestored(true);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (existing) return;
-    if (form.title || form.body) drafts.save(draftKey, form);
-    else drafts.clear(draftKey);
-  }, [form, existing, draftKey]);
+  const draft = useFormDraft<DraftShape>({
+    key: draftKey,
+    value: form,
+    isEmpty: (d) => !(d.title || d.body),
+    onRestore: setForm,
+  });
 
   const dirty =
     phase !== 'saved' &&
@@ -115,9 +103,11 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
       },
       existing?.id,
     );
-    await drafts.clear(draftKey);
+    // The memory is saved from here on. A failed draft cleanup must not turn
+    // that into "not saved"; it only earns a warning (R0-E).
     setPhase('saved');
-    setBanner({ tone: 'success', message: t('common.saved') });
+    const cleaned = await draft.discard();
+    setBanner(cleaned ? { tone: 'success', message: t('common.saved') } : { tone: 'warning', message: t('common.savedDraftCleanupFailed') });
     setTimeout(() => router.replace(`/memory/${memory.id}`), 400);
   }
 
@@ -169,16 +159,15 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
       }
     >
       <Stack.Screen options={{ title: existing ? t('memory.editTitle') : t('memory.newTitle') }} />
-      {draftRestored ? (
+      {draft.restored ? (
         <View style={{ gap: spacing.sm }}>
           <Banner tone="info" message={t('common.draftRestored')} />
           <Button
             label={t('common.discardDraft')}
             variant="ghost"
             onPress={() => {
-              drafts.clear(draftKey);
+              draft.discard();
               setForm(initial);
-              setDraftRestored(false);
             }}
           />
         </View>
@@ -248,7 +237,7 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
         }}
       />
       <ConfirmationSheet visible={guard.visible} title={t('common.discardTitle')} message={t('common.discardMessage')} confirmLabel={t('common.discardConfirm')} cancelLabel={t('common.keepEditing')} destructive onConfirm={() => {
-          if (!existing) drafts.clear(draftKey);
+          draft.discard();
           guard.confirm();
         }}
         onCancel={guard.cancel}

@@ -9,6 +9,7 @@ export const tr = {
     save: 'Kaydet',
     saving: 'Kaydediliyor…',
     saved: 'Kaydedildi',
+    savedDraftCleanupFailed: 'Kaydedildi. Bu cihazdaki eski taslak silinemedi; bir sonraki açılışta görürseniz "Taslağı sil" ile kaldırabilirsiniz.',
     cancel: 'Vazgeç',
     close: 'Kapat',
     continue: 'Devam et',

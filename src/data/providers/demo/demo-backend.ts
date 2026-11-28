@@ -44,6 +44,7 @@ export function migrate(raw: unknown): DemoState {
 
 let state: DemoState = { schemaVersion: DEMO_SCHEMA_VERSION, db: emptyDatabase(), currentUserId: null };
 let loaded = false;
+// `committed` is declared with the mutation queue below; ensureLoaded assigns it.
 const slotIndex = new Map<string, number>();
 const failedOnce = new Set<string>();
 
@@ -59,6 +60,7 @@ async function ensureLoaded() {
   if (raw) {
     try {
       state = migrate(JSON.parse(raw));
+      committed = state;
     } catch (e) {
       logger.warn('demo-db: could not parse stored state, starting empty', e);
     }
@@ -66,20 +68,43 @@ async function ensureLoaded() {
 }
 
 /**
- * Writes immediately and is awaited by every mutation, so a call only resolves
- * after the data is on disk (a reload right after "Kaydedildi" never loses it).
- * If the write fails, the in-memory state is rolled back to the last stored
- * state and the call rejects, so the UI never reports an unsaved change as saved.
+ * Mutations are serialized and isolated (R0-B):
+ * - `exclusive` runs one mutation at a time on a copy of the state.
+ * - The call resolves only after that copy is written to storage, so a reload
+ *   right after "Kaydedildi" never loses it.
+ * - If the mutation or the write fails, only that mutation's copy is dropped.
+ *   Because mutations never overlap, a failure cannot undo another mutation
+ *   that already succeeded.
+ * Reads are not serialized. A read that runs while a mutation is in flight can
+ * see that mutation before it is written (demo-only limitation; the real
+ * backend has database transactions).
  */
-async function persist(): Promise<void> {
-  try {
-    await keyValueStore.set(STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {
-    logger.warn('demo-db: persist failed, rolling back', e);
-    const raw = await keyValueStore.get(STORAGE_KEY).catch(() => null);
-    state = raw ? migrate(JSON.parse(raw)) : { schemaVersion: DEMO_SCHEMA_VERSION, db: emptyDatabase(), currentUserId: null };
-    throw new DataError('unknown', 'persist-failed');
-  }
+let committed: DemoState = state;
+let queue: Promise<unknown> = Promise.resolve();
+const clone = (s: DemoState): DemoState => JSON.parse(JSON.stringify(s)) as DemoState;
+
+function exclusive<T>(fn: () => Promise<T>): Promise<T> {
+  const run = queue.then(async () => {
+    await ensureLoaded();
+    const before = committed;
+    state = clone(before);
+    try {
+      const result = await fn();
+      try {
+        await keyValueStore.set(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        logger.warn('demo-db: write failed, mutation dropped', e);
+        throw new DataError('unknown', 'persist-failed');
+      }
+      committed = state;
+      return result;
+    } catch (e) {
+      state = before;
+      throw e;
+    }
+  });
+  queue = run.catch(() => undefined);
+  return run;
 }
 
 /** Every call passes through here: latency, offline, session and membership checks. */
@@ -114,19 +139,21 @@ function sessionFor(userId: Id): SessionInfo {
 }
 
 export const demoControls = {
-  async loadDemoFamily(): Promise<SessionInfo> {
-    await ensureLoaded();
-    state = { schemaVersion: DEMO_SCHEMA_VERSION, db: buildDemoDatabase(todayIn(deviceTimeZone()), nowIso()), currentUserId: DEMO_USER_ID };
-    await persist();
-    return sessionFor(DEMO_USER_ID);
+  loadDemoFamily(): Promise<SessionInfo> {
+    return exclusive(async () => {
+      state = { schemaVersion: DEMO_SCHEMA_VERSION, db: buildDemoDatabase(todayIn(deviceTimeZone()), nowIso()), currentUserId: DEMO_USER_ID };
+      return sessionFor(DEMO_USER_ID);
+    });
   },
-  async reset() {
-    state = { schemaVersion: DEMO_SCHEMA_VERSION, db: emptyDatabase(), currentUserId: null };
-    await keyValueStore.remove(STORAGE_KEY);
+  /** Demo only: wipes this device's demo data. Never used for real sign-out or account deletion. */
+  reset(): Promise<void> {
+    return exclusive(async () => {
+      state = { schemaVersion: DEMO_SCHEMA_VERSION, db: emptyDatabase(), currentUserId: null };
+    });
   },
 };
 
-export const demoBackend: Backend = {
+const rawDemoBackend: Backend = {
   name: 'demo-local',
 
   auth: {
@@ -148,7 +175,6 @@ export const demoBackend: Backend = {
       state.db.families.push(family);
       state.db.memberships.push({ id: newId('m'), familyId: family.id, userId, role: 'owner', relationshipLabel, status: 'active', joinedAt: nowIso(), revokedAt: null });
       state.db.preferences.push({ userId, selectedProfile: null, locale: 'tr', measurementSystem: 'metric', notifications: { appointmentReminders: true, weeklyPregnancyUpdate: true } });
-      await persist();
       return sessionFor(userId);
     },
     async acceptInvitation({ code, displayName }) {
@@ -164,11 +190,11 @@ export const demoBackend: Backend = {
       state.db.memberships.push({ id: newId('m'), familyId: state.db.families[0]!.id, userId, role: 'adult', relationshipLabel: 'Aile üyesi', status: 'active', joinedAt: nowIso(), revokedAt: null });
       state.db.preferences.push({ userId, selectedProfile: { kind: 'child', childId: 'child-deniz' }, locale: 'tr', measurementSystem: 'metric', notifications: { appointmentReminders: true, weeklyPregnancyUpdate: false } });
       state.currentUserId = userId;
-      await persist();
       return sessionFor(userId);
     },
+    /** Ends the demo session on this device. Keeps the stored demo data. */
     async signOut() {
-      await demoControls.reset();
+      state.currentUserId = null;
     },
   },
 
@@ -186,7 +212,6 @@ export const demoBackend: Backend = {
       requireFamily(actor, input.familyId);
       const p = { id: newId('preg'), ...input, status: 'active' as const, remindersPaused: false, contentHidden: false, createdBy: actor.userId, createdAt: nowIso(), updatedAt: nowIso() };
       state.db.pregnancies.push(p);
-      await persist();
       return p;
     },
     async updatePregnancy(id, patch) {
@@ -194,14 +219,12 @@ export const demoBackend: Backend = {
       const p = find(state.db.pregnancies, id);
       requireFamily(actor, p.familyId, patch.status === 'archived' ? 'archive-profile' : 'manage-profile');
       Object.assign(p, patch, { updatedAt: nowIso() });
-      await persist();
       return p;
     },
     async createChild(input) {
       const { actor } = await request();
       requireFamily(actor, input.familyId);
       const child = insertChild(actor.userId, input);
-      await persist();
       return child;
     },
     async recordBirth(pregnancyId, children) {
@@ -213,7 +236,6 @@ export const demoBackend: Backend = {
       const created = children.map((c) => insertChild(actor.userId, { ...c, familyId: p.familyId, originPregnancyId: p.id }));
       p.status = 'born';
       p.updatedAt = nowIso();
-      await persist();
       return created;
     },
   },
@@ -255,7 +277,6 @@ export const demoBackend: Backend = {
       }
       const asset = find(state.db.media, slot.mediaId);
       asset.status = 'ready';
-      await persist();
     },
     async finalize(input, { memoryId, clientRequestId }) {
       const { actor } = await request();
@@ -278,7 +299,6 @@ export const demoBackend: Backend = {
         state.db.memories.push(memory);
       }
       state.db.requestKeys[clientRequestId] = memory.id;
-      await persist();
       return memory;
     },
     async remove(id) {
@@ -291,7 +311,6 @@ export const demoBackend: Backend = {
       state.db.children.forEach((c) => {
         if (c.avatarMediaId && deletedMediaIds.includes(c.avatarMediaId)) c.avatarMediaId = null;
       });
-      await persist();
       return { deletedMediaIds };
     },
     mediaSource(mediaId) {
@@ -315,7 +334,6 @@ export const demoBackend: Backend = {
       requireFamily(actor, input.familyId);
       const m = { id: newId('ms'), ...input, isBirthMeasurement: false, authorId: actor.userId, createdAt: nowIso() };
       state.db.measurements.push(m);
-      await persist();
       return m;
     },
     async remove(id) {
@@ -323,7 +341,6 @@ export const demoBackend: Backend = {
       const m = find(state.db.measurements, id);
       if (!canOnRecord(actor, 'delete', { ...m, visibility: 'family' })) throw new DataError('forbidden');
       state.db.measurements = state.db.measurements.filter((x) => x.id !== id);
-      await persist();
     },
   },
 
@@ -338,7 +355,6 @@ export const demoBackend: Backend = {
       requireFamily(actor, input.familyId);
       const a = { id: newId('ap'), ...input, authorId: actor.userId, createdAt: nowIso(), updatedAt: nowIso() };
       state.db.appointments.push(a);
-      await persist();
       return a;
     },
     async update(id, input) {
@@ -346,7 +362,6 @@ export const demoBackend: Backend = {
       const a = find(state.db.appointments, id);
       if (!canOnRecord(actor, 'edit', a)) throw new DataError('forbidden');
       Object.assign(a, input, { updatedAt: nowIso() });
-      await persist();
       return a;
     },
     async remove(id) {
@@ -354,7 +369,6 @@ export const demoBackend: Backend = {
       const a = find(state.db.appointments, id);
       if (!canOnRecord(actor, 'delete', a)) throw new DataError('forbidden');
       state.db.appointments = state.db.appointments.filter((x) => x.id !== id);
-      await persist();
     },
   },
 
@@ -378,7 +392,6 @@ export const demoBackend: Backend = {
       const code = `MINIK-${Math.floor(1000 + Math.random() * 9000)}`;
       const inv = { id: newId('inv'), familyId, invitedBy: actor.userId, role, relationshipLabel, code, expiresAt: new Date(Date.now() + 48 * 3600_000).toISOString(), status: 'pending' as const, createdAt: nowIso() };
       state.db.invitations.push(inv);
-      await persist();
       return inv;
     },
     async revokeInvitation(id) {
@@ -386,7 +399,6 @@ export const demoBackend: Backend = {
       const inv = find(state.db.invitations, id);
       requireFamily(actor, inv.familyId, 'invite-member');
       inv.status = 'revoked';
-      await persist();
     },
     async revokeMember(membershipId) {
       const { actor } = await request();
@@ -396,7 +408,6 @@ export const demoBackend: Backend = {
       if (check !== 'ok') throw new DataError('validation', check);
       target.status = 'revoked';
       target.revokedAt = nowIso();
-      await persist();
     },
   },
 
@@ -412,7 +423,6 @@ export const demoBackend: Backend = {
       const pref = state.db.preferences.find((p) => p.userId === userId);
       if (!pref) throw new DataError('not-found');
       Object.assign(pref, patch as Partial<UserPreference>);
-      await persist();
       return pref;
     },
   },
@@ -433,6 +443,24 @@ function insertChild(userId: Id, input: Parameters<Backend['profiles']['createCh
   return child;
 }
 
+const READS = new Set(['getSession', 'list', 'get', 'listForChild', 'members', 'invitations', 'mediaSource']);
+
+/** Wraps every mutating repository method in `exclusive`. */
+function serialized(backend: Backend): Backend {
+  const out: Record<string, unknown> = { name: backend.name };
+  for (const [repoName, repo] of Object.entries(backend)) {
+    if (typeof repo !== 'object' || repo === null) continue;
+    out[repoName] = Object.fromEntries(
+      Object.entries(repo as Record<string, unknown>).map(([k, fn]) =>
+        typeof fn === 'function' && !READS.has(k) ? [k, (...args: unknown[]) => exclusive(() => (fn as (...a: unknown[]) => Promise<unknown>)(...args))] : [k, fn],
+      ),
+    );
+  }
+  return out as unknown as Backend;
+}
+
+export const demoBackend: Backend = serialized(rawDemoBackend);
+
 /** Test helper: inspect state without going through the API. */
 export const __demoInternals = {
   get state() {
@@ -440,5 +468,6 @@ export const __demoInternals = {
   },
   setCurrentUser(id: Id | null) {
     state.currentUserId = id;
+    committed = state;
   },
 };
