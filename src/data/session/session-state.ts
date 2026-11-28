@@ -66,9 +66,11 @@ export function resolveSession(f: SessionFacts): SessionState {
   if (!f.identity) return { kind: 'signed-out' };
   const current = resolveActiveMembership(f.memberships, f.activeFamilyId);
   if (!current) {
+    // Removed by an owner: either from the family in use just now, or (cold
+    // start, nothing remembered) any revoked membership. Leaving is not removal.
     const lostPrevious =
-      f.previousFamilyId !== null &&
-      f.memberships.some((m) => m.family.id === f.previousFamilyId && m.membership.status !== 'active');
+      (f.previousFamilyId !== null && f.memberships.some((m) => m.family.id === f.previousFamilyId && m.membership.status !== 'active')) ||
+      f.memberships.some((m) => m.membership.status === 'revoked');
     return {
       kind: 'authenticated-without-family',
       identity: f.identity,

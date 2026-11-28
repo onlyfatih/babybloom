@@ -34,6 +34,13 @@ describe('resolveSession', () => {
     expect(resolveActiveMembership([ms('f1'), ms('f2')], 'f2')!.family.id).toBe('f2');
     expect(resolveActiveMembership([ms('f1', 'revoked'), ms('f2')], 'f1')!.family.id).toBe('f2');
   });
+  it('reports a revocation found on a cold start too, but not a voluntary leave', () => {
+    const revoked = { ...ms('f1'), membership: { ...ms('f1').membership, status: 'revoked' as const } };
+    const left = { ...ms('f2'), membership: { ...ms('f2').membership, status: 'left' as const } };
+    expect(resolveSession({ identity: me, memberships: [revoked], activeFamilyId: null, profileCount: null, previousFamilyId: null })).toMatchObject({ kind: 'authenticated-without-family', notice: 'membership-revoked' });
+    expect(resolveSession({ identity: me, memberships: [left], activeFamilyId: null, profileCount: null, previousFamilyId: null })).not.toHaveProperty('notice');
+  });
+
   it('reports revocation of the family in use', () => {
     const s = resolveSession({ identity: me, memberships: [ms('f1', 'revoked'), ms('f2'), ms('f3')], activeFamilyId: 'f1', profileCount: null, previousFamilyId: 'f1' });
     expect(s).toMatchObject({ kind: 'authenticated-without-family', notice: 'membership-revoked' });

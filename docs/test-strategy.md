@@ -12,6 +12,8 @@
 | Features | Jest + RNTL | `__tests__/features` | chart model (gaps, ranges, reference sex, no percentiles), illustration motion rules and missing-art state |
 | Web journeys | Playwright (Chromium) | `scripts/web-journeys.mjs` | 13 end-to-end flows in the **web preview** (demo build); any uncaught page error fails the journey |
 | Real-backend web journey | Playwright (Chromium) + local Supabase + Mailpit | `scripts/real-journey.mjs` | R2 slice in a `supabase` web build: email code (wrong code first), family, child, text memory, reload, sign-out / sign-in |
+| Two-account web journey | Playwright (two browser contexts) + local Supabase + Mailpit | `scripts/sharing-journey.mjs` | R3: photos via signed URLs, invitation, shared and private memories, revocation (running app and cold start) |
+| Media service | Jest (node) + local Supabase | `backend/tests/media-service.test.ts` | upload verified on the server, signed URL for members, private photo and revoked member get nothing, avatar idempotency |
 | Session (React) | Jest + RNTL | `__tests__/session/session-provider-test.tsx` | late response for user A never reaches user B; sign-out drops cached data |
 | Provider integration | Jest (node) + local Supabase | `backend/tests/vertical-slice.test.ts` | the app's own Supabase provider and SessionController: idempotent creates, edit conflict, relaunch from storage, sign-out keeps data |
 | Screenshots | Playwright | `scripts/screenshots.mjs` | layout review at 320 and 393 px, normal and 1.35× text |

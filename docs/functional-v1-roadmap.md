@@ -62,11 +62,23 @@ Status: ✅ done (evidence linked) · 🟡 partial · ⬜ not started · ⛔ blo
 
 Not in R2 (deliberately): photos in real mode are hidden (`capabilities.photos = false`) until the signed-URL media service (R3); account and family deletion are not offered in real mode (R5).
 
+## R3: Photos and two-account sharing (exit: two independent authenticated clients prove positive and negative access) — ✅ (web + integration; native pending R6)
+
+| ID | Task | Owner | Dep | Acceptance | Verify | Status | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R3.1 | Async media resolution | Claude | R2.2 | Signed URL with expiry; cached per scope; refresh before expiry; reload on load error; missing/revoked → placeholder | `npx jest __tests__/features/media-source-test.ts`; `npm run test:db` (media-service) | ✅ | `resolveMedia` in both providers; `src/features/media/use-media-source.ts`; sync `mediaSource` removed |
+| R3.2 | Photo upload lifecycle in real mode | Claude | R3.1 | validate → reserve → upload → server verify → finalize; processed size; retry into the same slot; save blocked while photos are prepared | `npm run test:db` (media-service); sharing journey step 2 | ✅ | Server stores the real object size (test); orphan cleanup job is R5 |
+| R3.3 | Profile photo on child creation and birth | Claude | R3.2 | Verified avatar upload; retry does not duplicate | `npm run test:db` (media-service) | ✅ | `attachAvatar` in `supabase-backend.ts`. Replacing an existing photo: R4 |
+| R3.4 | Invitation UI against the server | Claude | R2.3 | Code shown once, single use, join from the no-family screen | sharing journey steps 3–4 | ✅ | `family/invite.tsx`, `onboarding/join.tsx` |
+| R3.5 | Shared timeline, private memories | Claude | R3.4 | B sees A's family memory and photo; never A's private memory (UI, data call, storage) | sharing journey 5–7; `npm run test:db` | ✅ | UI: journey; direct data and storage paths: `access.test.ts`, `media-service.test.ts` |
+| R3.6 | Revocation in the UI | Claude | R3.4 | Revoked member leaves the family view with a notice, both in a running app and on a cold start; no new media URLs | sharing journey 8–10; `npm run test:db` | ✅ | Refused requests trigger a session re-check; foreground and 5-minute checks; notice derived from revoked memberships |
+
+Known limits: a signed URL issued before a revocation works until it expires (≤ 10 min). Photos already shown stay in the device's image cache until the app clears it.
+
 ## R3–R7
 
 | Gate | Scope | Status | Blocking reason |
 | --- | --- | --- | --- |
-| R3 | Photos (async signed-URL media service, upload lifecycle, cleanup), invitation UI, shared timeline, private memories, revocation in UI | ⬜ | – (server side already tested in R1) |
 | R4 | Pregnancy onboarding + birth UI, profile switch/edit/archive, measurement correction + chart, appointments | ⬜ | – |
 | R5 | Export package (manifest, media), deletion flows, ownership transfer UI, storage deletion worker, backup/restore drill | ⬜ | Account deletion and authored-record retention rule needs an owner decision (proposal in docs/backend.md) |
 | R6 | iOS/Android dev + release builds, real devices, accessibility, CI | ⬜ | Needs the owner's Apple/Google accounts and a device; EAS may need a plan decision |

@@ -314,12 +314,17 @@ const rawDemoBackend: Backend = {
       });
       return { deletedMediaIds };
     },
-    mediaSource(mediaId) {
+    async resolveMedia(mediaId) {
+      const { actor, membership } = await request();
       const asset = state.db.media.find((m) => m.id === mediaId);
-      if (!asset) return null;
-      if (asset.storageKey.startsWith('fixture:')) return FIXTURE_IMAGES[asset.storageKey.slice(8)] ?? null;
-      if (asset.storageKey.startsWith('local:')) return asset.storageKey.slice(6);
-      return null;
+      if (!asset || asset.familyId !== membership.familyId) return null;
+      // Mirrors the server rule: a memory photo is visible only with its memory.
+      const owner = state.db.memories.find((m) => m.mediaIds.includes(mediaId));
+      if (owner && !canOnRecord(actor, 'view', owner)) return null;
+      let uri: string | number | null = null;
+      if (asset.storageKey.startsWith('fixture:')) uri = FIXTURE_IMAGES[asset.storageKey.slice(8)] ?? null;
+      if (asset.storageKey.startsWith('local:')) uri = asset.storageKey.slice(6);
+      return uri === null ? null : { uri, expiresAt: null };
     },
   },
 
@@ -431,8 +436,8 @@ const rawDemoBackend: Backend = {
 
 function insertChild(userId: Id, input: Parameters<Backend['profiles']['createChild']>[0]) {
   let avatarMediaId: Id | null = null;
-  if (input.avatarLocalUri) {
-    const asset: MediaAsset = { id: newId('media'), familyId: input.familyId, storageKey: `local:${input.avatarLocalUri}`, mimeType: 'image/jpeg', width: 0, height: 0, byteSize: 0, status: 'ready', uploadedBy: userId, createdAt: nowIso() };
+  if (input.avatar) {
+    const asset: MediaAsset = { id: newId('media'), familyId: input.familyId, storageKey: `local:${input.avatar.uri}`, mimeType: 'image/jpeg', width: 0, height: 0, byteSize: 0, status: 'ready', uploadedBy: userId, createdAt: nowIso() };
     state.db.media.push(asset);
     avatarMediaId = asset.id;
   }
@@ -444,7 +449,7 @@ function insertChild(userId: Id, input: Parameters<Backend['profiles']['createCh
   return child;
 }
 
-const READS = new Set(['getSession', 'list', 'get', 'listForChild', 'members', 'invitations', 'mediaSource']);
+const READS = new Set(['getSession', 'list', 'get', 'listForChild', 'members', 'invitations', 'resolveMedia']);
 
 /** Wraps every mutating repository method in `exclusive`. */
 function serialized(backend: Backend): Backend {

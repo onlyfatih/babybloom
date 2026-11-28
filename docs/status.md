@@ -2,8 +2,8 @@
 
 _Updated 2026-11-28._ Priority (owner, 2026-11-28): **functional V1 before final
 artwork and editorial content.** Plan and evidence: docs/functional-v1-roadmap.md.
-Branch `functional-v1` (pushed as a backup, no PR). **R0, R1 and R2 done
-(R2 native relaunch pending R6); R3 next.**
+Branch `functional-v1` (pushed as a backup, no PR). **R0–R3 done on web and
+local integration (native pending R6); R4 next.**
 M3 artwork/content work is deferred to R7.
 
 What is real now (R2): with `EXPO_PUBLIC_BACKEND=supabase` the app signs in
@@ -13,6 +13,12 @@ a reload and a sign-out / sign-in. Server rules are tested with real user
 sessions (43 integration tests). Not real yet: photos in real mode (hidden
 until R3), invitation UI against the server (R3), deletion flows (R5), any
 hosted project or native build.
+
+R3 adds: photo memories and child profile photos in real mode (private bucket,
+server-verified uploads, signed URLs that expire after 10 minutes), the
+invitation flow against the server, a shared timeline between two accounts,
+private memories hidden from other members, and revocation that moves the
+removed member out with a notice.
 
 | Phase | Scope | State |
 | --- | --- | --- |
@@ -45,7 +51,8 @@ invitations, JSON export, settings, prototype failure simulation.
   docs/handoff-growth-data.md.
 
 ## Known limitations
-- Real mode: photos are hidden until R3; delete account / family is not offered until R5; only text memories, profiles, measurements and appointments go through the server so far, and only the R2 slice has an end-to-end check.
+- Real mode: delete account / family is not offered until R5; replacing an existing child's photo is R4; measurements and appointments go through the server but have no end-to-end check yet (R4).
+- A signed photo URL issued before a revocation or delete works until it expires (≤ 10 min).
 - Demo mode (default build): data lives in AsyncStorage on one device; "family" is simulated and labelled "Demo".
 - In the demo provider, permission checks run on the client only. The real server rules are enforced and tested only in the local Supabase stack so far.
 - No encryption beyond what the OS provides. Not end-to-end encrypted.
@@ -78,3 +85,10 @@ invitations, JSON export, settings, prototype failure simulation.
   checked at 320 px with 1.35× text. The cache-isolation test was run with
   isolation disabled and failed as expected. Not run: native builds,
   devices, hosted Supabase.
+- 2026-11-28 (`functional-v1`, R3): typecheck pass, lint 0 problems, Jest
+  179/179 (22 suites), `npm run test:db` 48/48, demo web journeys 13/13,
+  real-backend journey 7/7, two-account sharing journey 10/10
+  (`scripts/sharing-journey.mjs`: profile photo, photo memory via signed URL,
+  invitation, join, shared memory and photo, private memory hidden, B's memory
+  visible to A, revocation in a running app and on a cold start). Not run:
+  native builds, devices, hosted Supabase.

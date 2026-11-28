@@ -3,7 +3,7 @@ import { compareLocalDates, LocalDate } from '@/domain/dates/local-date';
 import { parseLocalTime } from '@/domain/dates/zoned-date-time';
 import { MeasurementInputError, MeasurementUnit, normalizeMeasurement } from '@/domain/measurements/units';
 import type { MeasurementKind } from '@/domain/model';
-import type { NewChildInput } from '@/data/repositories/types';
+import type { LocalPhoto, NewChildInput } from '@/data/repositories/types';
 
 export interface ChildDraft {
   key: string;
@@ -13,7 +13,8 @@ export interface ChildDraft {
   weight: string;
   length: string;
   head: string;
-  photoUri: string | null;
+  /** Processed profile photo (not persisted in drafts). */
+  photo: LocalPhoto | null;
 }
 
 export const emptyChildDraft = (birthDate: LocalDate | null = null): ChildDraft => ({
@@ -24,7 +25,7 @@ export const emptyChildDraft = (birthDate: LocalDate | null = null): ChildDraft 
   weight: '',
   length: '',
   head: '',
-  photoUri: null,
+  photo: null,
 });
 
 export const measurementErrorText: Record<MeasurementInputError, string> = {
@@ -58,5 +59,5 @@ export function validateChildDraft(d: ChildDraft, today: LocalDate): { errors: C
     else errors[field] = measurementErrorText[r.error];
   }
   if (Object.keys(errors).length) return { errors, input: null };
-  return { errors, input: { name: d.name.trim(), birthDate: d.birthDate!, birthTime: time, avatarLocalUri: d.photoUri, birthMeasurements } };
+  return { errors, input: { name: d.name.trim(), birthDate: d.birthDate!, birthTime: time, avatar: d.photo, birthMeasurements } };
 }

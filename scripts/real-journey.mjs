@@ -86,7 +86,6 @@ try {
   });
   await step('Create a child profile', async () => {
     await page.getByText('Çocuğumuz dünyaya geldi').first().click();
-    if (await page.getByText('Fotoğraf ekle').filter({ visible: true }).count()) throw new Error('photo offered before R3');
     await page.getByTestId('child-name').fill('Kurgu');
     await page.getByTestId('birth-date').fill('01.10.2026');
     await page.getByText('Profili oluştur').click();
@@ -94,7 +93,6 @@ try {
   });
   await step('Save a text memory', async () => {
     await page.goto(`${base}/memory/new`);
-    await see('fotoğraf ekleme henüz açık değil');
     await page.getByTestId('memory-title').fill('İlk gülümseme');
     await page.getByTestId('memory-body').fill('Kurgu bir anı metni.');
     await page.getByTestId('save-memory').click();

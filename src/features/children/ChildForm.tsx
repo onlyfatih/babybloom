@@ -1,29 +1,28 @@
-import * as ImagePicker from 'expo-image-picker';
 import { StyleSheet, View } from 'react-native';
 import { useBackend } from '@/data/backend';
 import { t } from '@/content/localization';
 import { LocalDate } from '@/domain/dates/local-date';
 import { Avatar, Button, DateField, Text, TextField } from '@/ui/primitives';
 import { spacing } from '@/ui/tokens';
+import { pickAvatar } from '@/features/memories/photo-picker';
 import { ChildDraft, ChildDraftErrors } from './child-draft';
 
-export function ChildForm({ draft, onChange, errors, today, showPhoto = true }: { draft: ChildDraft; onChange: (d: ChildDraft) => void; errors: ChildDraftErrors; today: LocalDate; showPhoto?: boolean }) {
+export function ChildForm({ draft, onChange, errors, today, showPhoto = true }: { draft: ChildDraft; onChange: (update: (d: ChildDraft) => ChildDraft) => void; errors: ChildDraftErrors; today: LocalDate; showPhoto?: boolean }) {
   const backend = useBackend();
-  const set = (patch: Partial<ChildDraft>) => onChange({ ...draft, ...patch });
+  // Functional updates: a photo that finishes processing never overwrites what was typed meanwhile.
+  const set = (patch: Partial<ChildDraft>) => onChange((d) => ({ ...d, ...patch }));
 
-  async function pickAvatar() {
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) return;
-    const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.8, exif: false });
-    if (!r.canceled && r.assets[0]) set({ photoUri: r.assets[0].uri });
+  async function chooseAvatar() {
+    const r = await pickAvatar();
+    if (r.kind === 'ok') set({ photo: r.photo });
   }
 
   return (
     <View style={styles.form}>
       {showPhoto && backend.capabilities.photos ? (
         <View style={styles.photoRow}>
-          <Avatar name={draft.name || '?'} uri={draft.photoUri} size={72} />
-          <Button label={draft.photoUri ? t('onboarding.changePhoto') : t('onboarding.addPhoto')} variant="secondary" icon="camera-outline" onPress={pickAvatar} />
+          <Avatar name={draft.name || '?'} uri={draft.photo?.uri ?? null} size={72} />
+          <Button label={draft.photo ? t('onboarding.changePhoto') : t('onboarding.addPhoto')} variant="secondary" icon="camera-outline" onPress={chooseAvatar} />
         </View>
       ) : null}
       <TextField label={t('onboarding.childNameLabel')} placeholder={t('onboarding.childNamePlaceholder')} value={draft.name} onChangeText={(name) => set({ name })} error={errors.name} autoCapitalize="words" maxLength={60} testID="child-name" />

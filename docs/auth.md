@@ -48,7 +48,11 @@ means losing access to the account; account recovery by support is not in V1.
 - A session that disappears without an explicit sign-out (refresh token
   rejected) becomes `signed-out` with reason `session-expired`.
 - Revoked membership: the next resolution finds no active membership and
-  moves the user to `authenticated-without-family` with a notice.
+  moves the user to `authenticated-without-family` with a notice (also on a
+  cold start: any revoked membership shows it; leaving voluntarily does not).
+  A resolution runs on start, on sign-in events, on returning to the
+  foreground, every 5 minutes while signed in, and shortly after any request
+  the server refused with forbidden / membership-revoked / session-expired.
 
 ## Screens per state
 

@@ -272,6 +272,7 @@ export const tr = {
   },
   memory: {
     photosUnavailable: 'Bu sürümde fotoğraf ekleme henüz açık değil. Metin anıları kaydedilir.',
+    photoUnavailable: 'Bu fotoğraf şu an gösterilemiyor.',
     newTitle: 'Yeni anı',
     editTitle: 'Anıyı düzenle',
     titleLabel: 'Başlık',
@@ -352,6 +353,7 @@ export const tr = {
     timeZoneDevice: '{zone} (cihaz)',
   },
   family: {
+    inviteShownOnce: 'Kod yalnızca şimdi gösterilir; güvenlik için saklamıyoruz. Paylaşmayı unutursanız yeni bir davet oluşturun. Kod bir kez kullanılabilir.',
     title: 'Aile',
     members: 'Üyeler',
     owner: 'Aile sahibi',

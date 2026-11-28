@@ -5,11 +5,11 @@ import { useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { t } from '@/content/localization';
 import { formatLocalDate } from '@/content/localization/format';
-import { useBackend } from '@/data/backend';
 import { errorMessage } from '@/data/errors';
 import { canOnRecord } from '@/domain/permissions/permissions';
 import { useAuthorNames } from '@/features/family';
 import { useDeleteMemory, useMemory } from '@/features/memories';
+import { useMediaSource } from '@/features/media';
 import { useRequiredSession } from '@/features/profiles';
 import { Banner, Button, ConfirmationSheet, ErrorState, Icon, LoadingState, Screen, Text } from '@/ui/primitives';
 import { colors, layout, radii, spacing } from '@/ui/tokens';
@@ -17,7 +17,6 @@ import { colors, layout, radii, spacing } from '@/ui/tokens';
 export default function MemoryDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const session = useRequiredSession();
-  const backend = useBackend();
   const memory = useMemory(id);
   const names = useAuthorNames(session.family.id);
   const del = useDeleteMemory(session.family.id);
@@ -53,12 +52,9 @@ export default function MemoryDetail() {
       }
     >
       <Stack.Screen options={{ title: formatLocalDate(m.eventDate) }} />
-      {m.mediaIds.map((mid, i) => {
-        const src = backend.memories.mediaSource(mid);
-        return src ? (
-          <Image key={mid} source={src} style={[styles.photo, { width: photoWidth, height: photoWidth }]} contentFit="cover" accessible accessibilityLabel={t('memory.photoA11y', { title: m.title ?? formatLocalDate(m.eventDate), n: i + 1 })} />
-        ) : null;
-      })}
+      {m.mediaIds.map((mid, i) => (
+        <MemoryPhoto key={mid} mediaId={mid} size={photoWidth} label={t('memory.photoA11y', { title: m.title ?? formatLocalDate(m.eventDate), n: i + 1 })} />
+      ))}
       <View style={{ gap: spacing.sm }}>
         <Text variant="overline" color="textSecondary">
           {formatLocalDate(m.eventDate)}
@@ -104,7 +100,25 @@ export default function MemoryDetail() {
 }
 
 const styles = StyleSheet.create({
+  photoPlaceholder: { alignItems: 'center', justifyContent: 'center', gap: spacing.xs, backgroundColor: colors.surfaceCalm },
   photo: { borderRadius: radii.lg, backgroundColor: colors.surfaceMuted },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   actions: { flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between', flexWrap: 'wrap' },
 });
+
+/** One photo of a memory: signed source, refreshed on expiry; a plain placeholder when it is not available. */
+function MemoryPhoto({ mediaId, size, label }: { mediaId: string; size: number; label: string }) {
+  const media = useMediaSource(mediaId);
+  const box = [styles.photo, { width: size, height: size }];
+  if (media.status === 'ready') return <Image source={media.source} style={box} contentFit="cover" accessible accessibilityLabel={label} onError={media.onLoadError} />;
+  return (
+    <View style={[box, styles.photoPlaceholder]} accessible accessibilityLabel={media.status === 'loading' ? t('common.loading') : t('memory.photoUnavailable')}>
+      <Icon name={media.status === 'loading' ? 'image-outline' : 'cloud-offline-outline'} size={28} color="textSecondary" />
+      {media.status !== 'loading' ? (
+        <Text variant="caption" color="textSecondary">
+          {t('memory.photoUnavailable')}
+        </Text>
+      ) : null}
+    </View>
+  );
+}

@@ -6,8 +6,10 @@ import { Text } from './Text';
 
 export interface PhotoGridItem {
   key: string;
-  source: string | number;
+  /** null: not available (missing, deleted or not visible); a placeholder is shown. */
+  source: string | number | null;
   accessibilityLabel: string;
+  onLoadError?: () => void;
   /** 0..1 while uploading; undefined when idle. */
   progress?: number;
   failed?: boolean;
@@ -29,7 +31,13 @@ export function PhotoGrid({ items, onRemove, removeLabel, onAdd, addLabel, colum
     <View style={styles.grid}>
       {items.map((item, index) => (
         <View key={item.key} style={[styles.cell, { flexBasis: basis }]}>
-          <Image source={item.source} style={StyleSheet.absoluteFill} contentFit="cover" accessible accessibilityLabel={item.accessibilityLabel} />
+          {item.source !== null ? (
+            <Image source={item.source} style={StyleSheet.absoluteFill} contentFit="cover" accessible accessibilityLabel={item.accessibilityLabel} onError={item.onLoadError} />
+          ) : (
+            <View style={styles.unavailable} accessible accessibilityLabel={item.accessibilityLabel}>
+              <Icon name="image-outline" size={22} color="textSecondary" />
+            </View>
+          )}
           {item.progress !== undefined && item.progress < 1 ? (
             <View style={styles.progressTrack}>
               <View style={[styles.progressFill, { width: `${Math.round(item.progress * 100)}%` }]} />
@@ -60,6 +68,7 @@ export function PhotoGrid({ items, onRemove, removeLabel, onAdd, addLabel, colum
 }
 
 const styles = StyleSheet.create({
+  unavailable: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surfaceCalm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   cell: { aspectRatio: 1, borderRadius: radii.md, overflow: 'hidden', backgroundColor: colors.surfaceMuted, flexGrow: 0 },
   add: { alignItems: 'center', justifyContent: 'center', gap: spacing.xs, borderWidth: 1.5, borderStyle: 'dashed', borderColor: colors.borderStrong, backgroundColor: colors.surface, padding: spacing.xs },

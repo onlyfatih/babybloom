@@ -5,7 +5,7 @@ import { t } from '@/content/localization';
 import { errorMessage } from '@/data/errors';
 import { DataError } from '@/data/repositories/types';
 import { LocalDate, addDays } from '@/domain/dates/local-date';
-import { MAX_BODY_LENGTH, MAX_PHOTOS_PER_MEMORY, MAX_TITLE_LENGTH, MemoryValidationError, validateMemoryDraft } from '@/domain/memories/memory-rules';
+import { MAX_BODY_LENGTH, MAX_PHOTO_BYTES, MAX_PHOTOS_PER_MEMORY, MAX_TITLE_LENGTH, MemoryValidationError, validateMemoryDraft } from '@/domain/memories/memory-rules';
 import type { Memory, ProfileRef, Visibility } from '@/domain/model';
 import { draftKey as buildDraftKey } from '@/infrastructure/storage/drafts';
 import { useRequiredSession } from '@/features/profiles';
@@ -16,6 +16,7 @@ import { useToday } from '@/features/shared/use-today';
 import { Banner, Button, Chip, ConfirmationSheet, DateField, PhotoGrid, Screen, Text, TextField } from '@/ui/primitives';
 import { spacing } from '@/ui/tokens';
 import { PhotoState, useSaveMemory } from './hooks';
+import { useMediaSources } from '@/features/media';
 import { pickPhotos } from './photo-picker';
 
 interface DraftShape {
@@ -66,6 +67,7 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
   const guard = useUnsavedGuard(dirty && phase === 'idle');
 
   const totalPhotos = existingPhotos.length + photos.length;
+  const existingSources = useMediaSources(existingPhotos.map((p) => p.mediaId));
   const errors = validateMemoryDraft({ title: form.title, body: form.body, eventDate: form.eventDate, photoCount: totalPhotos }, today);
   const errorText = (e: MemoryValidationError): string =>
     ({
@@ -76,16 +78,22 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
       'title-too-long': t('errors.titleTooLong', { max: MAX_TITLE_LENGTH }),
       'body-too-long': t('errors.bodyTooLong', { max: MAX_BODY_LENGTH }),
     })[e];
-  const busy = phase === 'uploading' || phase === 'finalizing';
+  const [preparing, setPreparing] = useState(false);
+  const busy = phase === 'uploading' || phase === 'finalizing' || preparing;
 
   async function addPhotos() {
-    const result = await pickPhotos(MAX_PHOTOS_PER_MEMORY - totalPhotos);
+    let result: Awaited<ReturnType<typeof pickPhotos>>;
+    try {
+      result = await pickPhotos(MAX_PHOTOS_PER_MEMORY - totalPhotos, () => setPreparing(true));
+    } finally {
+      setPreparing(false);
+    }
     if (result.kind === 'permission-denied') return setBanner({ tone: 'warning', message: t('errors.photoPermission') });
     if (result.kind !== 'ok') return;
     setPhotos((prev) => [...prev, ...result.photos.map((photo) => ({ photo, progress: 0, status: 'idle' as const }))]);
     if (result.rejected.length) {
       const r = result.rejected[0]!.reason;
-      setBanner({ tone: 'warning', message: r === 'too-large' ? t('errors.photoTooLarge', { mb: 15 }) : r === 'type' ? t('errors.photoType') : t('errors.photoProcessing') });
+      setBanner({ tone: 'warning', message: r === 'too-large' ? t('errors.photoTooLarge', { mb: Math.round(MAX_PHOTO_BYTES / 1_048_576) }) : r === 'type' ? t('errors.photoType') : t('errors.photoProcessing') });
     }
   }
 
@@ -137,7 +145,7 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
 
   const uploadedCount = photos.filter((p) => p.status === 'uploaded').length;
   const items = [
-    ...existingPhotos.map((p, i) => ({ key: p.mediaId, source: backend.memories.mediaSource(p.mediaId) ?? '', accessibilityLabel: t('memory.photoA11y', { title: form.title || t('memory.newTitle'), n: i + 1 }) })),
+    ...existingPhotos.map((p, i) => ({ key: p.mediaId, source: existingSources[i]?.source ?? null, onLoadError: existingSources[i]?.onLoadError, accessibilityLabel: t('memory.photoA11y', { title: form.title || t('memory.newTitle'), n: i + 1 }) })),
     ...photos.map((p, i) => ({ key: p.photo.localId, source: p.photo.uri, accessibilityLabel: t('memory.photoA11y', { title: form.title || t('memory.newTitle'), n: existingPhotos.length + i + 1 }), progress: p.status === 'uploading' ? p.progress : undefined, failed: p.status === 'failed' })),
   ];
 

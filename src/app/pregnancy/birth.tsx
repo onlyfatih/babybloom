@@ -47,7 +47,7 @@ export default function RecordBirth() {
       {babies.map((b, i) => (
         <View key={b.key} style={{ gap: spacing.md }}>
           {babies.length > 1 ? <SectionHeader title={t('pregnancy.babyN', { n: i + 1 })} actionLabel={t('pregnancy.removeBaby')} onAction={() => setBabies((all) => all.filter((x) => x.key !== b.key))} /> : null}
-          <ChildForm draft={b} onChange={(d) => setBabies((all) => all.map((x) => (x.key === b.key ? d : x)))} errors={errors[b.key] ?? {}} today={today} />
+          <ChildForm draft={b} onChange={(update) => setBabies((all) => all.map((x) => (x.key === b.key ? { ...update(x), key: x.key } : x)))} errors={errors[b.key] ?? {}} today={today} />
         </View>
       ))}
       {babies.length < MAX_CHILDREN_PER_BIRTH ? <Button label={t('pregnancy.addAnotherBaby')} variant="secondary" icon="add" onPress={() => setBabies((all) => [...all, emptyChildDraft(all[0]?.birthDate ?? today)])} /> : null}

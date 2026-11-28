@@ -48,5 +48,7 @@ Where to make common changes. After any change: `npm run typecheck && npm run li
 | Change sign-in email text | `backend/supabase/templates/sign-in-code.html` (keep `{{ .Token }}`); hosted: paste into Auth → Email Templates | docs/auth.md |
 | Change environment / backend selection | `src/infrastructure/configuration/app-config.ts`, `.env.example`; provider wiring `createAppBackends` in `src/data/backend.tsx`; client `src/data/providers/supabase/client.ts` | Config tests in `__tests__/session/session-test.ts` |
 | Change a real-backend repository | `src/data/providers/supabase/supabase-backend.ts`, row mapping in `mapping.ts` | `__tests__/data/supabase-mapping-test.ts`, `backend/tests/vertical-slice.test.ts` |
+| Change how photos are shown (signed URLs, expiry, placeholders) | `resolveMedia` in each provider; hook `src/features/media/use-media-source.ts`; lifetime `SIGNED_URL_SECONDS` in `supabase-backend.ts` | `__tests__/features/media-source-test.ts`, `backend/tests/media-service.test.ts`; docs/backend.md § Media lifecycle |
+| Change photo preparation (resize, format, limits) | `src/features/memories/photo-picker.ts`, limits in `src/domain/memories/memory-rules.ts` (server limit stays 5 MB in the storage migration) | |
 | Turn on a feature a provider cannot do yet (e.g. photos in real mode) | `capabilities` in `src/data/repositories/types.ts` and each provider | UI hides what a provider cannot do |
 | Change import boundaries | `eslint.config.js` | |

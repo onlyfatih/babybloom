@@ -14,6 +14,8 @@ import { appointmentColumns, compareMemories, MemoryRow, subjectColumns, toAppoi
 
 type Client = SupabaseClient<Database>;
 export const MEDIA_BUCKET = 'family-media';
+/** Signed URL lifetime. Short, so a revoked member's copies stop working soon. */
+export const SIGNED_URL_SECONDS = 600;
 const MEMORY_COLUMNS = '*, memory_media(media_id, position)';
 const INVITATION_COLUMNS = 'id, family_id, invited_by, role, relationship_label, expires_at, status, accepted_by, accepted_at, revoked_at, created_at';
 
@@ -43,11 +45,37 @@ function sqlNull<T>(value: T | null | undefined): T {
   return (value ?? null) as T;
 }
 
+/**
+ * Uploads a processed profile photo and attaches it to the child: reserve an
+ * avatar slot, upload, then `set_child_avatar` verifies the stored object on
+ * the server. Retrying after a failure is safe (the child already exists; a
+ * new slot is reserved; abandoned pending slots are cleaned up server-side).
+ */
+async function attachAvatar(client: Client, familyId: string, childId: string, photo: LocalPhoto): Promise<string> {
+  const rows = await unwrapData(
+    client.rpc('reserve_media_upload', { p_family_id: familyId, p_purpose: 'avatar', p_mime_type: photo.mimeType, p_byte_size: Math.max(1, photo.byteSize), p_width: photo.width, p_height: photo.height }),
+  );
+  const slot = rows[0];
+  if (!slot) throw new DataError('unknown', 'no-slot');
+  await putObject(client, slot.storage_key, photo);
+  await unwrap(client.rpc('set_child_avatar', { p_child_id: childId, p_media_id: slot.media_id }));
+  return slot.media_id;
+}
+
+async function putObject(client: Client, key: string, photo: LocalPhoto): Promise<void> {
+  const bytes = await readBytes(photo.uri);
+  const { error } = await client.storage.from(MEDIA_BUCKET).upload(key, bytes, { contentType: photo.mimeType, upsert: false });
+  // A retry after a lost response finds the object already there: that is success.
+  if (error && !/exists|Duplicate/i.test(error.message)) {
+    const d = toDataError(error);
+    throw d.code === 'offline' ? d : new DataError('upload-failed', error.message);
+  }
+}
+
 export function createSupabaseBackend(client: Client): Backend {
   return {
     name: 'supabase',
-    // Photo display needs the signed-URL media service (R3); until then photo entry points are hidden.
-    capabilities: { photos: false },
+    capabilities: { photos: true },
 
     // Legacy combined auth contract, used only by demo-era screens. Real
     // identity lives in the session backend (session-backend.ts).
@@ -118,8 +146,12 @@ export function createSupabaseBackend(client: Client): Backend {
             p_request_id: options?.requestId ?? newRequestId(),
           }),
         );
-        // Profile photo upload for new children is part of R3 (media service).
-        return toChild(await unwrapData(client.from('children').select('*').eq('id', id).single()));
+        let row = await unwrapData(client.from('children').select('*').eq('id', id).single());
+        if (input.avatar && !row.avatar_media_id) {
+          await attachAvatar(client, input.familyId, id, input.avatar);
+          row = await unwrapData(client.from('children').select('*').eq('id', id).single());
+        }
+        return toChild(row);
       },
       async recordBirth(pregnancyId, children, options) {
         const ids = await unwrapData(
@@ -134,7 +166,15 @@ export function createSupabaseBackend(client: Client): Backend {
             })),
           }),
         );
-        const rows = await unwrapData(client.from('children').select('*').in('id', ids));
+        let rows = await unwrapData(client.from('children').select('*').in('id', ids));
+        // Photos after the birth itself: the birth is already recorded if an upload fails.
+        // Matched by name, not by position: a retried birth returns its children in a different order.
+        const withPhotos = children.map((c) => {
+          const matches = rows.filter((r) => r.name === c.name.trim());
+          return { photo: c.avatar, row: matches.length === 1 ? matches[0] : undefined };
+        });
+        for (const { photo, row } of withPhotos) if (photo && row && !row.avatar_media_id) await attachAvatar(client, row.family_id, row.id, photo);
+        if (withPhotos.some((w) => w.photo)) rows = await unwrapData(client.from('children').select('*').in('id', ids));
         return rows.map(toChild);
       },
     },
@@ -167,13 +207,7 @@ export function createSupabaseBackend(client: Client): Backend {
       async uploadPhoto(slot, photo, onProgress) {
         onProgress(0);
         const key = slot.target || (await unwrapData(client.from('media_assets').select('storage_key').eq('id', slot.mediaId).single())).storage_key;
-        const bytes = await readBytes(photo.uri);
-        const { error } = await client.storage.from(MEDIA_BUCKET).upload(key, bytes, { contentType: photo.mimeType, upsert: false });
-        // A retry after a lost response finds the object already there: that is success.
-        if (error && !/exists|Duplicate/i.test(error.message)) {
-          const d = toDataError(error);
-          throw d.code === 'offline' ? d : new DataError('upload-failed', error.message);
-        }
+        await putObject(client, key, photo);
         onProgress(1);
       },
       async finalize(input, { memoryId, clientRequestId, expectedVersion }) {
@@ -200,13 +234,24 @@ export function createSupabaseBackend(client: Client): Backend {
         const before = await unwrap(client.from('memories').select('memory_media(media_id)').eq('id', id).maybeSingle());
         const deleted = await unwrapData(client.from('memories').delete().eq('id', id).select('id'));
         if (!deleted.length) throw new DataError(before ? 'forbidden' : 'not-found');
-        // Objects are queued for deletion server-side; URLs stop working at once.
+        // Objects are queued for deletion server-side (outbox, worker in R5). New
+        // signed URLs are refused at once; a URL issued earlier keeps working
+        // until it expires (SIGNED_URL_SECONDS) or the worker removes the object.
         return { deletedMediaIds: (before?.memory_media ?? []).map((m) => m.media_id) };
       },
-      mediaSource() {
-        // Signed URLs are asynchronous and expire: resolved by the media
-        // service in R3. Until then photos show the "not available" state.
-        return null;
+      async resolveMedia(mediaId) {
+        // The row is readable only if the photo is (RLS app.can_read_media), so
+        // a private memory's photo resolves to null for everyone but its author.
+        const row = await unwrap(client.from('media_assets').select('storage_key, status').eq('id', mediaId).maybeSingle());
+        if (!row || row.status !== 'ready') return null;
+        const issuedAt = Date.now();
+        const { data, error } = await client.storage.from(MEDIA_BUCKET).createSignedUrl(row.storage_key, SIGNED_URL_SECONDS);
+        if (error) {
+          // Object gone (deleted, never uploaded) or policy refused: nothing to show.
+          if (/not.?found|object not found|404|400/i.test(`${error.message} ${(error as { statusCode?: string }).statusCode ?? ''}`)) return null;
+          throw toDataError(error);
+        }
+        return { uri: data.signedUrl, expiresAt: issuedAt + SIGNED_URL_SECONDS * 1000 };
       },
     },
 

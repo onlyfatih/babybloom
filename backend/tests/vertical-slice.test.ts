@@ -53,7 +53,7 @@ describe('R2 vertical slice (real persistence)', () => {
       birthDate: '2026-10-01' as LocalDate,
       birthTime: null,
       originPregnancyId: null,
-      avatarLocalUri: null,
+      avatar: null,
       birthMeasurements: [{ kind: 'weight' as const, canonicalValue: 3200, enteredUnit: 'g' as const }],
     };
     const created = await app.profiles.createChild(childInput, { requestId });

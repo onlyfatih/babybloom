@@ -47,6 +47,12 @@ export class DataError extends Error {
   }
 }
 
+/** `expiresAt` (epoch ms) is when the source stops working; null for local/bundled sources. */
+export interface MediaSource {
+  uri: string | number;
+  expiresAt: number | null;
+}
+
 export interface SessionInfo {
   user: User;
   family: Family;
@@ -73,7 +79,8 @@ export interface NewChildInput {
   birthDate: LocalDate;
   birthTime: LocalTime | null;
   originPregnancyId: Id | null;
-  avatarLocalUri: string | null;
+  /** Processed profile photo to upload with the child (optional). */
+  avatar: LocalPhoto | null;
   birthMeasurements: { kind: MeasurementKind; canonicalValue: number; enteredUnit: MeasurementUnit }[];
 }
 
@@ -128,8 +135,13 @@ export interface MemoryRepository {
   finalize(input: MemoryInput, options: { memoryId?: Id; clientRequestId: string; expectedVersion?: number }): Promise<Memory>;
   /** Deletes the memory row and its media objects. */
   remove(id: Id): Promise<{ deletedMediaIds: Id[] }>;
-  /** Resolves a renderable source (signed URL / local asset) for a media id. */
-  mediaSource(mediaId: Id): string | number | null;
+  /**
+   * Resolves a renderable source for a media id (R3). Asynchronous because a
+   * real source is a short-lived signed URL. Resolves to null when the file is
+   * missing, deleted, still uploading or not visible to this user (the same
+   * answer for all four, so private photos do not leak their existence).
+   */
+  resolveMedia(mediaId: Id): Promise<MediaSource | null>;
 }
 
 export interface NewMeasurementInput {

@@ -9,4 +9,5 @@ export const queryKeys = {
   members: (familyId: string) => ['members', familyId] as const,
   invitations: (familyId: string) => ['invitations', familyId] as const,
   preferences: (userId: string) => ['preferences', userId] as const,
+  media: (mediaId: string) => ['media', mediaId] as const,
 };

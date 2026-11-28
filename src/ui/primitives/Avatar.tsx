@@ -8,9 +8,11 @@ export interface AvatarProps {
   uri?: string | number | null;
   size?: number;
   tone?: Extract<ColorRole, 'surfaceAccent' | 'surfaceWarm' | 'surfaceCalm'>;
+  /** Called when the image fails to load (e.g. an expired signed URL). */
+  onError?: () => void;
 }
 
-export function Avatar({ name, uri, size = 48, tone = 'surfaceWarm' }: AvatarProps) {
+export function Avatar({ name, uri, size = 48, tone = 'surfaceWarm', onError }: AvatarProps) {
   const initials = name
     .split(/\s+/)
     .map((p) => p.charAt(0))
@@ -20,7 +22,7 @@ export function Avatar({ name, uri, size = 48, tone = 'surfaceWarm' }: AvatarPro
   return (
     <View style={[styles.base, { width: size, height: size, borderRadius: size / 2, backgroundColor: colors[tone] }]} accessible accessibilityRole="image" accessibilityLabel={name}>
       {uri ? (
-        <Image source={uri} style={{ width: size, height: size }} contentFit="cover" accessible={false} />
+        <Image source={uri} style={{ width: size, height: size }} contentFit="cover" accessible={false} onError={onError} />
       ) : (
         <Text variant={size >= 64 ? 'title' : 'bodyStrong'} style={{ fontSize: size * 0.38, lineHeight: size * 0.46 }}>
           {initials}

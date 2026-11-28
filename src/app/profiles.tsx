@@ -3,7 +3,7 @@ import { goBack } from '@/features/shared/navigation';
 import { View } from 'react-native';
 import { t } from '@/content/localization';
 import { formatAge } from '@/content/localization/format';
-import { useBackend } from '@/data/backend';
+import { useMediaSource } from '@/features/media';
 import { childAge } from '@/domain/dates/age';
 import { pregnancyView } from '@/features/pregnancy';
 import { Profile, profileName, sameRef, useSelectedProfile, useSelectProfile } from '@/features/profiles';
@@ -12,7 +12,6 @@ import { Avatar, Card, Divider, Icon, ListRow, Screen, Text } from '@/ui/primiti
 import { spacing } from '@/ui/tokens';
 
 export default function ProfileSwitcher() {
-  const backend = useBackend();
   const today = useToday();
   const { profiles, selected } = useSelectedProfile();
   const select = useSelectProfile();
@@ -33,14 +32,13 @@ export default function ProfileSwitcher() {
         {profiles.map((p, i) => {
           const isSelected = sameRef(p.ref, selected?.ref);
           const name = profileName(p, t('profile.unnamedPregnancy'));
-          const avatar = p.kind === 'child' && p.child.avatarMediaId ? backend.memories.mediaSource(p.child.avatarMediaId) : null;
           return (
             <View key={p.kind === 'child' ? p.child.id : p.pregnancy.id}>
               {i > 0 ? <Divider /> : null}
               <ListRow
                 title={name}
                 subtitle={subtitle(p)}
-                leading={<Avatar name={name} uri={avatar} size={44} tone={p.kind === 'child' ? 'surfaceAccent' : 'surfaceWarm'} />}
+                leading={<ProfileAvatar name={name} mediaId={p.kind === 'child' ? p.child.avatarMediaId : null} tone={p.kind === 'child' ? 'surfaceAccent' : 'surfaceWarm'} />}
                 trailing={isSelected ? <Icon name="checkmark-circle" color="primary" /> : null}
                 showChevron={false}
                 onPress={async () => {
@@ -62,3 +60,7 @@ export default function ProfileSwitcher() {
   );
 }
 
+function ProfileAvatar({ name, mediaId, tone }: { name: string; mediaId: string | null; tone: 'surfaceAccent' | 'surfaceWarm' }) {
+  const media = useMediaSource(mediaId);
+  return <Avatar name={name} uri={media.source} size={44} tone={tone} onError={media.onLoadError} />;
+}

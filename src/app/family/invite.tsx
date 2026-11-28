@@ -36,13 +36,16 @@ export default function Invite() {
           <Text variant="overline" color="textSecondary">
             {t('family.inviteReady')}
           </Text>
-          <Text variant="display" selectable accessibilityLabel={invitation.code.split('').join(' ')}>
+          <Text variant={invitation.code.length > 12 ? 'title' : 'display'} align="center" selectable accessibilityLabel={invitation.code.split('').join(' ')} testID="invite-code">
             {invitation.code}
           </Text>
           <Text variant="caption" color="textSecondary">
             {t('family.inviteExpires', { date: formatLocalDate(todayIn(deviceTimeZone(), new Date(invitation.expiresAt))) })}
           </Text>
         </Card>
+        <Text variant="caption" color="textSecondary">
+          {t('family.inviteShownOnce')}
+        </Text>
         <Button label={t('family.share')} icon="share-outline" fullWidth onPress={() => Share.share({ message: t('family.inviteShareMessage', { code: invitation.code }) }).catch(() => undefined)} />
       </Screen>
     );

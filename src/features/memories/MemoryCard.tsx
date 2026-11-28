@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 import { t } from '@/content/localization';
 import { formatLocalDate } from '@/content/localization/format';
-import { useBackend } from '@/data/backend';
+import { useMediaSource } from '@/features/media';
 import type { Memory } from '@/domain/model';
 import { Card, Icon, Text } from '@/ui/primitives';
 import { colors, radii, spacing } from '@/ui/tokens';
@@ -18,8 +18,8 @@ export interface MemoryCardProps {
 }
 
 export function MemoryCard({ memory, authorName, isOwn, chapterLabel, onPress, compact }: MemoryCardProps) {
-  const backend = useBackend();
-  const cover = memory.mediaIds[0] ? backend.memories.mediaSource(memory.mediaIds[0]) : null;
+  const media = useMediaSource(memory.mediaIds[0]);
+  const cover = media.source;
   const title = memory.title ?? (memory.body ? memory.body.split('\n')[0]!.slice(0, 60) : '');
   const author = isOwn ? t('common.authorYou') : t('common.authorAdded', { name: authorName });
   const a11y = [title, formatLocalDate(memory.eventDate), author, memory.mediaIds.length ? t('memory.photoCount', { count: memory.mediaIds.length }) : null, memory.visibility === 'private' ? t('memory.privateBadge') : null]
@@ -30,7 +30,7 @@ export function MemoryCard({ memory, authorName, isOwn, chapterLabel, onPress, c
     <Card padded={false} onPress={onPress} accessibilityLabel={a11y}>
       {cover ? (
         <View style={[styles.cover, compact && styles.coverCompact]}>
-          <Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" accessible={false} transition={150} />
+          <Image source={cover} style={StyleSheet.absoluteFill} contentFit="cover" accessible={false} transition={150} onError={media.onLoadError} />
           {memory.mediaIds.length > 1 ? (
             <View style={styles.countPill}>
               <Icon name="images-outline" size={14} color="textOnPrimary" />

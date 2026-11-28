@@ -75,6 +75,20 @@ describe('memory save', () => {
   });
 });
 
+describe('media resolution', () => {
+  it('a private memory photo resolves only for its author', async () => {
+    const db = __demoInternals.state.db;
+    const priv = db.memories.find((m) => m.visibility === 'private')!;
+    db.media.push({ ...db.media.find((x) => x.id === 'media-sea')!, id: 'media-private' });
+    priv.mediaIds = ['media-private'];
+    as(priv.authorId);
+    await expect(demoBackend.memories.resolveMedia(priv.mediaIds[0]!)).resolves.toMatchObject({ expiresAt: null });
+    const other = __demoInternals.state.db.memberships.find((m) => m.userId !== priv.authorId && m.status === 'active')!;
+    as(other.userId);
+    await expect(demoBackend.memories.resolveMedia(priv.mediaIds[0]!)).resolves.toBeNull();
+  });
+});
+
 describe('delete and media cleanup', () => {
   it('deleting a memory removes its media objects and clears avatar references', async () => {
     as('u-elif');
@@ -83,7 +97,7 @@ describe('delete and media cleanup', () => {
     const media = __demoInternals.state.db.media.map((m) => m.id);
     expect(media).not.toContain('media-window');
     expect(__demoInternals.state.db.children[0]!.avatarMediaId).toBeNull();
-    expect(demoBackend.memories.mediaSource('media-window')).toBeNull();
+    await expect(demoBackend.memories.resolveMedia('media-window')).resolves.toBeNull();
   });
 
   it('editing a memory to drop a photo deletes that photo', async () => {
@@ -99,8 +113,8 @@ describe('pregnancy to child transition', () => {
     as('u-elif');
     const before = __demoInternals.state.db.memories.filter((m) => m.subject.kind === 'pregnancy' && m.subject.pregnancyId === 'preg-fistik').map((m) => m.id);
     const kids = await demoBackend.profiles.recordBirth('preg-fistik', [
-      { name: 'Ada', birthDate: localDate('2026-11-27'), birthTime: null, avatarLocalUri: null, birthMeasurements: [{ kind: 'weight', canonicalValue: 2900, enteredUnit: 'kg' }] },
-      { name: 'Ege', birthDate: localDate('2026-11-27'), birthTime: null, avatarLocalUri: null, birthMeasurements: [] },
+      { name: 'Ada', birthDate: localDate('2026-11-27'), birthTime: null, avatar: null, birthMeasurements: [{ kind: 'weight', canonicalValue: 2900, enteredUnit: 'kg' }] },
+      { name: 'Ege', birthDate: localDate('2026-11-27'), birthTime: null, avatar: null, birthMeasurements: [] },
     ]);
     expect(kids.map((k) => k.originPregnancyId)).toEqual(['preg-fistik', 'preg-fistik']);
     const after = __demoInternals.state.db.memories.filter((m) => m.subject.kind === 'pregnancy' && m.subject.pregnancyId === 'preg-fistik').map((m) => m.id);

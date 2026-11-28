@@ -64,8 +64,19 @@ was reviewed and replaced. Changes and why:
 5. Deletes: row deletion queues the object; a worker with the secret key
    deletes queued objects and records attempts/errors (worker: R5). Until the
    worker runs, an object can still exist physically but no client can get a
-   URL for it (tested).
+   URL for it (tested). A signed URL issued **before** the delete or a
+   revocation keeps working until it expires (600 s, `SIGNED_URL_SECONDS`).
 6. Abandoned pending rows: R5 cleanup job (age > 24 h).
+
+Client side (R3): photos are resized and re-encoded on the device (no EXIF;
+native behaviour unverified), the processed size is sent at reservation and
+must be ≤ 5 MB. `MemoryRepository.resolveMedia` returns a signed URL with its
+expiry, or `null` for missing, deleted, pending or not-visible media (one
+answer for all, so private photos do not leak their existence).
+`useMediaSource` (src/features/media) caches per (user, family) scope,
+refreshes 60 s before expiry and refetches once when an image fails to load.
+Profile photos for new children and births use the avatar slot and
+`set_child_avatar`; replacing an existing child's photo is R4.
 
 ## Account deletion and authored records (proposal, needs owner decision, R5)
 

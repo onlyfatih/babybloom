@@ -37,15 +37,32 @@ export interface SessionApi {
 
 const SessionContext = createContext<SessionApi | null>(null);
 
+/** Lets query clients created before the provider mounted reach the controller. */
+class HintRelay {
+  private fn: () => void = () => undefined;
+  set(fn: () => void) {
+    this.fn = fn;
+  }
+  fire() {
+    this.fn();
+  }
+}
+
 interface View {
   state: SessionState;
   client: QueryClient;
   generation: number;
 }
 
-export function SessionProvider({ backends, children, createQueryClient = defaultCreateQueryClient }: { backends: AppBackends; children: ReactNode; createQueryClient?: () => QueryClient }) {
+/** While signed in, re-check membership this often (revocation by another member shows up without a restart). */
+const SESSION_CHECK_MS = 5 * 60_000;
+
+export function SessionProvider({ backends, children, createQueryClient = defaultCreateQueryClient }: { backends: AppBackends; children: ReactNode; createQueryClient?: (onSessionHint: () => void) => QueryClient }) {
   // Mutable holder for the latest view, read from callbacks (never during render).
-  const [holder] = useState(() => ({ view: { state: { kind: 'bootstrapping' } as SessionState, client: createQueryClient(), generation: 0 } as View }));
+  const [holder] = useState(() => {
+    const relay = new HintRelay();
+    return { relay, view: { state: { kind: 'bootstrapping' }, client: createQueryClient(() => relay.fire()), generation: 0 } as View };
+  });
   const [view, setView] = useState<View>(holder.view);
 
   const [controller] = useState(
@@ -67,11 +84,22 @@ export function SessionProvider({ backends, children, createQueryClient = defaul
         v = { ...prev, state: next };
       } else {
         prev.client.clear();
-        v = { state: next, client: createQueryClient(), generation: prev.generation + 1 };
+        v = { state: next, client: createQueryClient(() => holder.relay.fire()), generation: prev.generation + 1 };
       }
       holder.view = v;
       setView(v);
     });
+    // Coalesce bursts of refused requests into one re-check.
+    let hintTimer: ReturnType<typeof setTimeout> | null = null;
+    holder.relay.set(() => {
+      hintTimer ??= setTimeout(() => {
+        hintTimer = null;
+        void controller.refresh();
+      }, 250);
+    });
+    const check = setInterval(() => {
+      if (AppState.currentState === 'active' && holder.view.state.kind === 'ready') void controller.refresh();
+    }, SESSION_CHECK_MS);
     backends.session.identity.setForeground(AppState.currentState === 'active');
     void controller.start();
     const appState = AppState.addEventListener('change', (s) => {
@@ -80,6 +108,9 @@ export function SessionProvider({ backends, children, createQueryClient = defaul
       if (active) void controller.refresh();
     });
     return () => {
+      clearInterval(check);
+      if (hintTimer) clearTimeout(hintTimer);
+      holder.relay.set(() => undefined);
       appState.remove();
       unsubscribe();
       controller.stop();

@@ -14,6 +14,8 @@ import { compareLocalDates } from '../dates/local-date';
 
 export const MAX_PHOTOS_PER_MEMORY = 10;
 export const MAX_PHOTO_BYTES = 15 * 1024 * 1024; // before client-side resize
+/** Limit for the processed file that is uploaded (private bucket limit, checked again by the server). */
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 export const RESIZE_LONG_EDGE_PX = 2048;
 export const ACCEPTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/heic', 'image/webp'] as const;
 export const MAX_TITLE_LENGTH = 120;
