@@ -74,6 +74,8 @@ export interface Child {
   /** Explicit relationship to the pregnancy this child was born from (nullable). */
   originPregnancyId: Id | null;
   avatarMediaId: Id | null;
+  /** Set when an owner archived the profile. */
+  archivedAt?: Instant | null;
   createdBy: Id;
   createdAt: Instant;
   updatedAt: Instant;
@@ -109,6 +111,8 @@ export interface Memory {
   mediaIds: Id[];
   visibility: Visibility;
   authorId: Id;
+  /** Server edit counter for conflict detection (absent in the demo provider). */
+  version?: number;
   createdAt: Instant;
   updatedAt: Instant;
 }
@@ -126,8 +130,13 @@ export interface GrowthMeasurement {
   enteredUnit: string;
   measuredOn: LocalDate;
   isBirthMeasurement: boolean;
+  /** Length only: lying down (recumbent) or standing. null = not recorded. */
+  method?: 'recumbent-length' | 'standing-height' | null;
+  source?: 'home' | 'clinician' | 'imported' | null;
+  note?: string | null;
   authorId: Id;
   createdAt: Instant;
+  updatedAt?: Instant;
 }
 
 export interface Appointment {

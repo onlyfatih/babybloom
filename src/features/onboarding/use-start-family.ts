@@ -1,20 +1,23 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { useBackend } from '@/data/backend';
-import { queryKeys } from '@/data/query-keys';
+import type { ProfileRef } from '@/domain/model';
 import { t } from '@/content/localization';
+import { useSessionApi } from '@/features/session';
 
 /**
- * Returns the current session, creating a new family first if needed.
- * P3: preceded by real sign-up/sign-in (Supabase Auth).
+ * First-profile flow (R2). The family comes from the session: the current one
+ * (real accounts create or join a family first), or, in the demo welcome flow
+ * only, a new demo family. The session state is re-resolved once, after the
+ * profile exists, so the app moves straight to the timeline.
  */
-export function useEnsureFamily() {
+export function useProfileOnboarding() {
+  const session = useSessionApi();
   const backend = useBackend();
-  const qc = useQueryClient();
-  return async (relationshipLabel = t('onboarding.defaultRelationship')) => {
-    const existing = await backend.auth.getSession();
-    if (existing) return existing;
-    const session = await backend.auth.createFamily({ displayName: t('common.you'), relationshipLabel });
-    qc.setQueryData(queryKeys.session, session);
-    return session;
+  return {
+    ensureFamily: (relationshipLabel = t('onboarding.defaultRelationship')) =>
+      session.ensureFamily({ familyName: t('onboarding.familyNameDefault'), displayName: t('common.you'), relationshipLabel }),
+    async finish(userId: string, ref: ProfileRef) {
+      await backend.preferences.update(userId, { selectedProfile: ref });
+      await session.refresh();
+    },
   };
 }

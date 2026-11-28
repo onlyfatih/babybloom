@@ -11,6 +11,7 @@ Local first: everything below runs and is tested against the local stack
 | `backend/supabase/migrations/20261128000100_core_schema.sql` | Tables, constraints, indexes, integrity triggers, RLS |
 | `backend/supabase/migrations/20261128000200_rpc.sql` | Transactional RPCs (security definer, own auth checks) |
 | `backend/supabase/migrations/20261128000300_storage.sql` | Private bucket `family-media` and object policies |
+| `backend/supabase/migrations/20261128000400_create_child.sql` | `create_child` RPC (R2): child + birth measurements in one transaction, idempotent per `(created_by, create_request_id)` |
 | `backend/tests/*.test.ts` | Integration tests (`npm run test:db`) |
 | `src/data/providers/supabase/` | Client-side provider: generated types, error mapping, session backend |
 

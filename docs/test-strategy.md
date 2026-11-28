@@ -10,10 +10,13 @@
 | Data (demo) | Jest | `__tests__/data` | private memories hidden from owner, revoked member blocked, two-stage save, idempotency, delete cleans media, birth keeps memories, offline |
 | Growth engine | Jest | `__tests__/domain/growth-lms-test.ts` | LMS both directions, L = 0, interpolation, no extrapolation, \|z\| > 3 refused, WHO printed values and independent rcpch fixtures |
 | Features | Jest + RNTL | `__tests__/features` | chart model (gaps, ranges, reference sex, no percentiles), illustration motion rules and missing-art state |
-| Web journeys | Playwright (Chromium) | `scripts/web-journeys.mjs` | 13 end-to-end flows in the **web preview**; any uncaught page error fails the journey |
+| Web journeys | Playwright (Chromium) | `scripts/web-journeys.mjs` | 13 end-to-end flows in the **web preview** (demo build); any uncaught page error fails the journey |
+| Real-backend web journey | Playwright (Chromium) + local Supabase + Mailpit | `scripts/real-journey.mjs` | R2 slice in a `supabase` web build: email code (wrong code first), family, child, text memory, reload, sign-out / sign-in |
+| Session (React) | Jest + RNTL | `__tests__/session/session-provider-test.tsx` | late response for user A never reaches user B; sign-out drops cached data |
+| Provider integration | Jest (node) + local Supabase | `backend/tests/vertical-slice.test.ts` | the app's own Supabase provider and SessionController: idempotent creates, edit conflict, relaunch from storage, sign-out keeps data |
 | Screenshots | Playwright | `scripts/screenshots.mjs` | layout review at 320 and 393 px, normal and 1.35× text |
 | Static | tsc strict, eslint | `npm run typecheck`, `npm run lint` | types, hooks rules, layer import rules |
-| RLS policies (P3) | supabase CLI + pgTAP | `backend/supabase/tests` (not created) | server authorization |
+| RLS / RPC / Storage | Jest (node) + local Supabase | `backend/tests/*.test.ts` (`npm run test:db`) | server authorization with real user sessions |
 | Native (P4) | manual on device / simulator, later Maestro | docs/manual-acceptance.md | real iOS/Android behaviour |
 
 RNTL 14: `render` and `fireEvent` are async, always `await` them.

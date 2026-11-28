@@ -180,13 +180,13 @@ await journey('11. Upload failure: memory is NOT reported saved; retry works', a
   await see('Siz eklediniz', 10000);
 });
 
-await journey('12. Offline: shows banner, refuses to save', async () => {
+await journey('12. Offline cold start: retry screen states why, nothing deleted', async () => {
   await page.goto(`${base}/settings`);
   await page.getByRole('switch', { name: 'Çevrimdışı durumu taklit et' }).click();
+  // A cold start while offline cannot resolve the account: the retry screen says why, nothing is deleted.
   await page.goto(`${base}/memory/new`);
-  await see('Çevrimdışısınız'); // nothing loads, nothing can be saved, the reason is stated
-  await page.goto(`${base}/`);
-  await see('Çevrimdışısınız');
+  await see('İnternet bağlantısı yok gibi görünüyor');
+  await see('Tekrar dene');
 });
 
 await browser.close();

@@ -74,7 +74,8 @@ export class SessionController {
     try {
       who = await identity.current();
       if (!who) {
-        next = { kind: 'signed-out', reason: this.state.kind === 'bootstrapping' || this.state.kind === 'signed-out' ? undefined : 'session-expired' };
+        // Already signed out: keep the reason (the SIGNED_OUT event after an explicit sign-out re-resolves too).
+        next = this.state.kind === 'signed-out' ? this.state : { kind: 'signed-out', reason: this.state.kind === 'bootstrapping' ? undefined : 'session-expired' };
       } else {
         const [list, activeFamilyId] = await Promise.all([memberships.listMine(), memberships.activeFamilyId()]);
         const resolved = resolveSession({ identity: who, memberships: list, activeFamilyId, profileCount: null, previousFamilyId: this.previousFamilyId });

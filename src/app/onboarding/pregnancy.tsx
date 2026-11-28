@@ -4,18 +4,18 @@ import { t } from '@/content/localization';
 import { errorMessage } from '@/data/errors';
 import { LocalDate } from '@/domain/dates/local-date';
 import { validateDating } from '@/domain/pregnancy/gestation';
-import { useEnsureFamily } from '@/features/onboarding';
+import { useProfileOnboarding } from '@/features/onboarding';
 import { useCreatePregnancy } from '@/features/pregnancy';
 import { DatingMode, datingErrorMessage, PregnancyDatingForm } from '@/features/pregnancy/PregnancyDatingForm';
-import { useSelectProfile } from '@/features/profiles';
 import { useToday } from '@/features/shared/use-today';
+import { newRequestId } from '@/infrastructure/ids/request-id';
 import { Banner, Button, Screen, TextField } from '@/ui/primitives';
 
 export default function PregnancyOnboarding() {
   const today = useToday();
-  const ensureFamily = useEnsureFamily();
+  const onboarding = useProfileOnboarding();
   const create = useCreatePregnancy();
-  const select = useSelectProfile();
+  const [requestId] = useState(newRequestId);
   const [nickname, setNickname] = useState('');
   const [mode, setMode] = useState<DatingMode>('due-date');
   const [dueDate, setDueDate] = useState<LocalDate | null>(null);
@@ -32,9 +32,9 @@ export default function PregnancyOnboarding() {
     setSubmitError(null);
     if (validation) return;
     try {
-      const session = await ensureFamily(t('onboarding.defaultRelationship'));
-      const p = await create.mutateAsync({ familyId: session.family.id, nickname: nickname.trim() || null, ...input });
-      await select.mutateAsync({ kind: 'pregnancy', pregnancyId: p.id });
+      const { familyId, userId } = await onboarding.ensureFamily();
+      const p = await create.mutateAsync({ familyId, nickname: nickname.trim() || null, ...input, requestId });
+      await onboarding.finish(userId, { kind: 'pregnancy', pregnancyId: p.id });
       router.dismissAll();
       router.replace('/(tabs)');
     } catch (e) {

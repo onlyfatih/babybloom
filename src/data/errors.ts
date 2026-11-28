@@ -17,6 +17,10 @@ export function errorMessage(error: unknown): string {
         return t('errors.recordDeleted');
       case 'invalid-invitation':
         return t('errors.invalidCode');
+      case 'validation':
+        if (error.message === 'rate-limited') return t('auth.rateLimited');
+        if (error.message === 'invalid-code') return t('auth.wrongCode');
+        return t('common.genericError');
       default:
         return t('common.genericError');
     }

@@ -4,7 +4,7 @@ const expoConfig = require('eslint-config-expo/flat');
 
 module.exports = defineConfig([
   expoConfig,
-  { ignores: ['dist/*', 'dist-large/*', '.expo/*'] },
+  { ignores: ['dist/*', 'dist-large/*', 'dist-real/*', '.expo/*'] },
   {
     // Architecture guardrails (docs/architecture.md): domain stays pure; screens never touch providers.
     files: ['src/domain/**'],

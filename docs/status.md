@@ -2,15 +2,17 @@
 
 _Updated 2026-11-28._ Priority (owner, 2026-11-28): **functional V1 before final
 artwork and editorial content.** Plan and evidence: docs/functional-v1-roadmap.md.
-Branch `functional-v1` (local, not pushed). **R0 and R1 done; R2 next.**
+Branch `functional-v1` (pushed as a backup, no PR). **R0, R1 and R2 done
+(R2 native relaunch pending R6); R3 next.**
 M3 artwork/content work is deferred to R7.
 
-What is real now (R1): a reviewed database schema, RLS, transactional RPCs and
-a private storage bucket, tested against a **local** Supabase stack with real
-user sessions (40 integration tests), plus the client-side session model,
-email-code sign-in adapter and validated configuration. What is **not** real
-yet: the app screens still run on the on-device demo provider; a `supabase`
-build stops at a clear configuration screen until R2 connects the screens.
+What is real now (R2): with `EXPO_PUBLIC_BACKEND=supabase` the app signs in
+with an emailed code, creates or joins a family, creates a pregnancy or child
+profile and saves text memories on a **local** Supabase stack; records survive
+a reload and a sign-out / sign-in. Server rules are tested with real user
+sessions (43 integration tests). Not real yet: photos in real mode (hidden
+until R3), invitation UI against the server (R3), deletion flows (R5), any
+hosted project or native build.
 
 | Phase | Scope | State |
 | --- | --- | --- |
@@ -43,11 +45,12 @@ invitations, JSON export, settings, prototype failure simulation.
   docs/handoff-growth-data.md.
 
 ## Known limitations
-- The app screens still use the demo provider: data lives in AsyncStorage on one device; "family" is simulated. The server side exists and is tested locally, but no screen calls it yet (R2).
+- Real mode: photos are hidden until R3; delete account / family is not offered until R5; only text memories, profiles, measurements and appointments go through the server so far, and only the R2 slice has an end-to-end check.
+- Demo mode (default build): data lives in AsyncStorage on one device; "family" is simulated and labelled "Demo".
 - In the demo provider, permission checks run on the client only. The real server rules are enforced and tested only in the local Supabase stack so far.
 - No encryption beyond what the OS provides. Not end-to-end encrypted.
 - Weekly content: 6 demo weeks, not medically reviewed. Other weeks are empty.
-- Notifications are preferences only; nothing is sent.
+- No notifications are sent, and Settings says so (no toggles).
 - Calendar export is off (needs a development build).
 - Export has no photos. Offline shows cached data only while the app is open.
 - Not verified on iOS or Android devices; only the web preview was tested.
@@ -67,3 +70,11 @@ invitations, JSON export, settings, prototype failure simulation.
   13/13 on the demo build, production web build with no backend config shows
   only the configuration screen on /, /onboarding, /preview/visuals,
   /settings. Not run: native builds, devices, hosted Supabase.
+- 2026-11-28 (`functional-v1`, R2): typecheck pass, lint 0 problems, Jest
+  174/174 (21 suites), `npm run test:db` 43/43 (local stack, includes the
+  vertical slice through the app's own provider), demo web journeys 13/13,
+  real-backend web journey 7/7 (`scripts/real-journey.mjs`: email code,
+  family, child, text memory, reload, sign-out / sign-in), new screens
+  checked at 320 px with 1.35× text. The cache-isolation test was run with
+  isolation disabled and failed as expected. Not run: native builds,
+  devices, hosted Supabase.

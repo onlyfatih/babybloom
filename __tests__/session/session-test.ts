@@ -178,6 +178,20 @@ describe('SessionController', () => {
     expect(c.current).toEqual({ kind: 'signed-out', reason: 'session-expired' });
   });
 
+  it('an explicit sign-out keeps its reason when the SIGNED_OUT event re-resolves', async () => {
+    const { b, backend } = fakeBackend();
+    b.setUser(me);
+    b.memberships = [ms('f1')];
+    const c = new SessionController({ backend, onScopeChange: () => undefined });
+    await c.start();
+    await c.signOut();
+    b.emit({ type: 'signed-out' });
+    await new Promise((r) => setTimeout(r, 0));
+    await c.refresh();
+    expect(c.current).toEqual({ kind: 'signed-out', reason: 'signed-out' });
+    expect(b.signOuts).toBe(1);
+  });
+
   it('revocation moves the user out of the family with a notice', async () => {
     const { b, backend } = fakeBackend();
     b.setUser(me);

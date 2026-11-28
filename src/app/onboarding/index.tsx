@@ -1,12 +1,10 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { t } from '@/content/localization';
 import { illustrationForWeek } from '@/content/illustrations';
 import { demoControls } from '@/data/providers/demo/demo-backend';
-import { resetCacheToSession } from '@/features/profiles';
-import { featureFlags } from '@/infrastructure/configuration/feature-flags';
+import { useSessionApi } from '@/features/session';
 import { Banner, Button, Icon, IconName, Screen, Text } from '@/ui/primitives';
 import { colors, elevation, layout, radii, spacing } from '@/ui/tokens';
 
@@ -28,7 +26,10 @@ function Choice({ icon, title, hint, onPress, tone }: { icon: IconName; title: s
 }
 
 export default function Welcome() {
-  const qc = useQueryClient();
+  const session = useSessionApi();
+  const demo = session.mode === 'demo';
+  // A real account reaches this screen with a family already; joining another family happens elsewhere.
+  const canJoin = session.state.kind === 'signed-out';
   const [loadingDemo, setLoadingDemo] = useState(false);
   return (
     <Screen edges={['top', 'bottom', 'left', 'right']}>
@@ -45,9 +46,9 @@ export default function Welcome() {
       <View style={styles.choices}>
         <Choice icon="leaf-outline" tone={colors.surfaceWarm} title={t('onboarding.expecting')} hint={t('onboarding.expectingHint')} onPress={() => router.push('/onboarding/pregnancy')} />
         <Choice icon="happy-outline" tone={colors.surfaceAccent} title={t('onboarding.born')} hint={t('onboarding.bornHint')} onPress={() => router.push('/onboarding/child')} />
-        <Choice icon="people-outline" tone={colors.surfaceCalm} title={t('onboarding.join')} hint={t('onboarding.joinHint')} onPress={() => router.push('/onboarding/join')} />
+        {canJoin ? <Choice icon="people-outline" tone={colors.surfaceCalm} title={t('onboarding.join')} hint={t('onboarding.joinHint')} onPress={() => router.push('/onboarding/join')} /> : null}
       </View>
-      {featureFlags.prototypeTools ? (
+      {demo && canJoin ? (
         <>
           <Banner tone="info" message={t('onboarding.prototypeNotice')} />
           <Button
@@ -59,8 +60,8 @@ export default function Welcome() {
             testID="load-demo"
             onPress={async () => {
               setLoadingDemo(true);
-              const session = await demoControls.loadDemoFamily();
-              resetCacheToSession(qc, session);
+              await demoControls.loadDemoFamily();
+              await session.refresh();
               router.replace('/(tabs)');
             }}
           />

@@ -7,7 +7,7 @@ export function useCreateChild() {
   const backend = useBackend();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: NewChildInput) => backend.profiles.createChild(input),
+    mutationFn: ({ requestId, ...input }: NewChildInput & { requestId?: string }) => backend.profiles.createChild(input, requestId ? { requestId } : undefined),
     onSuccess: (c) => {
       qc.invalidateQueries({ queryKey: queryKeys.profiles(c.familyId) });
       qc.invalidateQueries({ queryKey: queryKeys.measurements(c.id) });

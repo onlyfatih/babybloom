@@ -25,7 +25,8 @@ means losing access to the account; account recovery by support is not in V1.
   unlocked phone the refresh token is readable. Moving to an encrypted store
   is a later hardening item.
 - Auto-refresh runs only in the foreground (`IdentityRepository.setForeground`,
-  wired to AppState in R2).
+  wired to AppState in `SessionProvider`). Returning to the foreground
+  re-resolves the session, so revocation and expiry show up without a restart.
 - `SessionController` (src/data/session) owns the six app states:
   bootstrapping, signed-out, authenticated-without-family,
   authenticated-with-family-without-profile, ready, recoverable-error.
@@ -34,12 +35,42 @@ means losing access to the account; account recovery by support is not in V1.
   `onScopeChange` before publishing, where the app cancels queries and clears
   the previous scope's cache.
 - Sign-out is `signOut({ scope: 'local' })`: this device only. It never
-  deletes server data or other devices' sessions. Drafts are keyed by user,
-  so another account on the same device never sees them.
+  deletes server data or other devices' sessions. Drafts are keyed by user;
+  on sign-out the signed-out user's unsaved drafts on this device are also
+  removed, so a shared device keeps no unsent text.
+- Cache isolation (`src/features/session/SessionProvider.tsx`): one
+  TanStack QueryClient per (user, family) scope. On a change the old client's
+  queries are cancelled before the new state is published, then the old
+  client is cleared and the screens remount with a fresh client.
+- The demo build runs the same state machine through
+  `src/data/providers/demo/demo-session-backend.ts`; it has no email identity
+  and is labelled "Demo" on every screen. A build uses exactly one provider.
 - A session that disappears without an explicit sign-out (refresh token
   rejected) becomes `signed-out` with reason `session-expired`.
 - Revoked membership: the next resolution finds no active membership and
   moves the user to `authenticated-without-family` with a notice.
+
+## Screens per state
+
+| State | Screen |
+| --- | --- |
+| bootstrapping | splash stays up |
+| signed-out | `sign-in` (email) → `sign-in/code`; demo build: the demo welcome |
+| authenticated-without-family | `family/setup`: create, join with code, or choose |
+| authenticated-with-family-without-profile | `onboarding` (pregnancy or child) |
+| ready | the app |
+| recoverable-error | retry screen; sign-out offered; nothing deleted |
+
+## Run the app against the local stack
+
+```sh
+npx supabase start --workdir backend          # prints API_URL and PUBLISHABLE_KEY
+cp .env.example .env.local                     # fill in those two values
+npx expo start                                 # Expo Go / dev build / web
+```
+
+Sign-in codes arrive in Mailpit (http://127.0.0.1:54324). On a phone use your
+computer's LAN IP in `EXPO_PUBLIC_SUPABASE_URL`.
 
 ## Local setup
 

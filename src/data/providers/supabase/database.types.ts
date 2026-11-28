@@ -57,14 +57,14 @@ isOneToOne: false
                   ]
                 },"children": {
                   Row: {
-                    "archived_at": string | null,"avatar_media_id": string | null,"avatar_purpose": Database["public"]['Enums']["media_purpose"],"birth_date": string,"birth_time": string | null,"created_at": string,"created_by": string,"family_id": string,"id": string,"name": string,"origin_pregnancy_id": string | null,"updated_at": string
+                    "archived_at": string | null,"avatar_media_id": string | null,"avatar_purpose": Database["public"]['Enums']["media_purpose"],"birth_date": string,"birth_time": string | null,"create_request_id": string | null,"created_at": string,"created_by": string,"family_id": string,"id": string,"name": string,"origin_pregnancy_id": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "archived_at"?: string | null,"avatar_media_id"?: string | null,"avatar_purpose"?: Database["public"]['Enums']["media_purpose"],"birth_date": string,"birth_time"?: string | null,"created_at"?: string,"created_by": string,"family_id": string,"id"?: string,"name": string,"origin_pregnancy_id"?: string | null,"updated_at"?: string
+                    "archived_at"?: string | null,"avatar_media_id"?: string | null,"avatar_purpose"?: Database["public"]['Enums']["media_purpose"],"birth_date": string,"birth_time"?: string | null,"create_request_id"?: string | null,"created_at"?: string,"created_by": string,"family_id": string,"id"?: string,"name": string,"origin_pregnancy_id"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "archived_at"?: string | null,"avatar_media_id"?: string | null,"avatar_purpose"?: Database["public"]['Enums']["media_purpose"],"birth_date"?: string,"birth_time"?: string | null,"created_at"?: string,"created_by"?: string,"family_id"?: string,"id"?: string,"name"?: string,"origin_pregnancy_id"?: string | null,"updated_at"?: string
+                    "archived_at"?: string | null,"avatar_media_id"?: string | null,"avatar_purpose"?: Database["public"]['Enums']["media_purpose"],"birth_date"?: string,"birth_time"?: string | null,"create_request_id"?: string | null,"created_at"?: string,"created_by"?: string,"family_id"?: string,"id"?: string,"name"?: string,"origin_pregnancy_id"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -307,6 +307,9 @@ isOneToOne: false
 { Args: { "p_display_name": string,"p_token": string }; Returns: {
               "family_id": string,"result": string
             }[]
+                           },
+"create_child":
+{ Args: { "p_birth_date": string,"p_birth_time": string,"p_family_id": string,"p_measurements": Json,"p_name": string,"p_request_id": string }; Returns: string
                            },
 "create_family":
 { Args: { "p_display_name": string,"p_family_name": string,"p_relationship_label": string }; Returns: string

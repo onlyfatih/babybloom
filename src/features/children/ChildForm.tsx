@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import { StyleSheet, View } from 'react-native';
+import { useBackend } from '@/data/backend';
 import { t } from '@/content/localization';
 import { LocalDate } from '@/domain/dates/local-date';
 import { Avatar, Button, DateField, Text, TextField } from '@/ui/primitives';
@@ -7,6 +8,7 @@ import { spacing } from '@/ui/tokens';
 import { ChildDraft, ChildDraftErrors } from './child-draft';
 
 export function ChildForm({ draft, onChange, errors, today, showPhoto = true }: { draft: ChildDraft; onChange: (d: ChildDraft) => void; errors: ChildDraftErrors; today: LocalDate; showPhoto?: boolean }) {
+  const backend = useBackend();
   const set = (patch: Partial<ChildDraft>) => onChange({ ...draft, ...patch });
 
   async function pickAvatar() {
@@ -18,7 +20,7 @@ export function ChildForm({ draft, onChange, errors, today, showPhoto = true }: 
 
   return (
     <View style={styles.form}>
-      {showPhoto ? (
+      {showPhoto && backend.capabilities.photos ? (
         <View style={styles.photoRow}>
           <Avatar name={draft.name || '?'} uri={draft.photoUri} size={72} />
           <Button label={draft.photoUri ? t('onboarding.changePhoto') : t('onboarding.addPhoto')} variant="secondary" icon="camera-outline" onPress={pickAvatar} />

@@ -4,7 +4,7 @@ _Single source of truth for the functional V1 contract (owner's brief of
 2026-11-28). Updated 2026-11-28._
 
 Baseline: `visuals-growth-references` @ `54e031e`. Work branch: `functional-v1`
-(local commits; **not pushed**, pushing needs the owner's OK).
+(pushed to GitHub as a backup with the owner's OK; no pull request, nothing merged).
 
 Owners: **Claude** = the single Claude Code session doing this work. No
 parallel agents have been used so far; the four roles in the brief
@@ -17,8 +17,10 @@ Commands used below:
 npm run typecheck && npm run lint && npm test         # unit/component (Jest, jest-expo)
 npx supabase start --workdir backend                   # local stack (Docker)
 npx supabase db reset --workdir backend                # migrations from a clean DB
-npm run test:db                                        # DB/RLS/Storage/Auth integration
-npx expo export --platform web --output-dir dist && npm run journeys   # web smoke (supplementary)
+npm run test:db                                        # DB/RLS/Storage/Auth + app-provider integration
+npx expo export --platform web --output-dir dist && npm run journeys   # demo web smoke (supplementary)
+# real-backend web journey (supplementary): build with EXPO_PUBLIC_BACKEND=supabase into dist-real, serve it, then
+node scripts/real-journey.mjs http://localhost:8082 http://127.0.0.1:54324
 ```
 
 Status: ✅ done (evidence linked) · 🟡 partial · ⬜ not started · ⛔ blocked
@@ -31,7 +33,7 @@ Status: ✅ done (evidence linked) · 🟡 partial · ⬜ not started · ⛔ blo
 | R0.2 | Draft hydration (A) | Claude | – | No save/clear before restore; never overwrites typing; keys scoped by user/family/profile/purpose; unreadable/stale dropped; photos not drafted (documented) | `npx jest __tests__/features/use-form-draft-test.tsx __tests__/data/r0-reliability-test.ts` | ✅ | `src/features/shared/use-form-draft.ts`, `drafts.ts` |
 | R0.3 | Local provider isolation (B) | Claude | – | Mutations serialized on a copy; a failed write never rolls back another; delayed and interleaved failures tested | same | ✅ | `demo-backend.ts` `exclusive()` |
 | R0.4 | Save then failed draft cleanup (E) | Claude | R0.2 | Saved memory never reported "not saved"; warning shown | code review + `drafts.clear` returns boolean (tested) | ✅ | `MemoryEditor.tsx` |
-| R0.5 | Export accuracy (C) and query states (D) | Claude | R2 | Re-verify access at export time; initial/empty/stale/forbidden/failed distinguished; reconnect + foreground refresh; no blind write retries | – | ⬜ | Moved to R2/R5: needs the real provider. Existing: export blocks on loading/failed queries; mutations `retry: false` |
+| R0.5 | Export accuracy (C) and query states (D) | Claude | R2 | Re-verify access at export time; initial/empty/stale/forbidden/failed distinguished; reconnect + foreground refresh; no blind write retries | – | 🟡 | Done in R2: foreground refresh of the session, no retries for writes or final errors (forbidden, not-found, revoked, expired, validation). Open (R5): export re-verification at export time, stale/forbidden states per section |
 
 ## R1: Real backend foundation (exit: migrations run from clean state; identity and negative access tests pass) — ✅
 
@@ -45,18 +47,20 @@ Status: ✅ done (evidence linked) · 🟡 partial · ⬜ not started · ⛔ blo
 | R1.6 | Auth method | Claude | – | One method: email one-time code; setup, limits, recovery documented | `npm run test:db` (session.test.ts) | ✅ | docs/auth.md |
 | R1.7 | Auth state model | Claude | R1.6 | Six explicit states; subscription + cleanup; stale results discarded; scope-change hook | `npx jest __tests__/session` | ✅ | `src/data/session/*` |
 | R1.8 | Config and provider selection | Claude | – | Validated env; production never demo; privileged keys refused; `.env.example` | `npx jest __tests__/session` + production web build check | ✅ | `app-config.ts`, `ConfigurationGate.tsx` |
-| R1.9 | Separate identity / membership / invitation / active family | Claude | R1.7 | Contracts split | typecheck | 🟡 | Contracts + Supabase implementation done; screens still use the demo `AuthRepository` until R2 |
+| R1.9 | Separate identity / membership / invitation / active family | Claude | R1.7 | Contracts split; screens use them | typecheck + R2 checks | ✅ | Screens go through `SessionProvider`; the demo `AuthRepository` survives only inside `demo-session-backend.ts` |
 
-## R2: First real vertical slice (exit: account → family → child → text memory survives restart with real persistence) — ⬜
+## R2: First real vertical slice (exit: account → family → child → text memory survives restart with real persistence) — ✅ (web + integration; native pending R6)
 
-| ID | Task | Owner | Dep | Acceptance | Status |
-| --- | --- | --- | --- | --- | --- |
-| R2.1 | SessionProvider in the app root, route guards from SessionState | Claude | R1.7 | Each of the 6 states renders a defined screen; foreground refresh | ⬜ |
-| R2.2 | Query keys scoped by user + family; cancel + clear on scope change | Claude | R2.1 | Test: late response for user A never shown to user B | ⬜ |
-| R2.3 | Sign-in screens (email, code), family create / join / choose | Claude | R2.1 | Turkish copy; rate-limit and wrong-code messages | ⬜ |
-| R2.4 | Supabase profile + memory (text) repositories, row mapping tests | Claude | R1.5 | Mapping unit tests; integration test through the repository | ⬜ |
-| R2.5 | Demo provider behind the new contracts, labelled "Demo" | Claude | R2.1 | Demo never mixes with signed-in data | ⬜ |
-| R2.6 | Relaunch evidence on web build + native dev build | Claude | R2.4 | Record survives restart | ⬜ |
+| ID | Task | Owner | Dep | Acceptance | Verify | Status | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R2.1 | SessionProvider in the app root, route guards from SessionState | Claude | R1.7 | Each of the 6 states renders a defined screen; foreground refresh | `npx jest __tests__/session`; real journey | ✅ | `src/features/session/SessionProvider.tsx`, `src/app/_layout.tsx` (guards), `src/app/index.tsx` (hub); AppState → `setForeground` + refresh |
+| R2.2 | Cache isolation on user/family change | Claude | R2.1 | Late response for user A never shown to user B | `npx jest __tests__/session/session-provider-test.tsx` | ✅ | One QueryClient per (user, family) scope, subtree keyed by it; in-flight queries cancelled before publish. Test fails when isolation is disabled (checked) |
+| R2.3 | Sign-in screens (email, code), family create / join / choose | Claude | R2.1 | Turkish copy; rate-limit and wrong-code messages | `node scripts/real-journey.mjs` | ✅ | `src/app/sign-in/*`, `src/app/family/setup.tsx`, `SessionErrorScreen` |
+| R2.4 | Supabase profile + memory (text) repositories, row mapping tests | Claude | R1.5 | Mapping unit tests; integration through the repository | `npx jest __tests__/data/supabase-mapping-test.ts`; `npm run test:db` | ✅ | `supabase-backend.ts`, `mapping.ts`, `backend/tests/vertical-slice.test.ts`; idempotent child (RPC) and pregnancy (request id = row id) creation; memory edit conflict by version |
+| R2.5 | Demo provider behind the new contracts, labelled "Demo" | Claude | R2.1 | Demo never mixes with signed-in data | `npm run journeys` | ✅ | `demo-session-backend.ts`; demo badge on every screen; provider fixed per build, demo tools hidden in real builds |
+| R2.6 | Relaunch evidence | Claude | R2.4 | Record survives restart | `npm run test:db` (vertical-slice), real journey step 6 | 🟡 | Web build: full reload restores session and memory; integration: new client on the same storage. **Native dev build not run** (R6) |
+
+Not in R2 (deliberately): photos in real mode are hidden (`capabilities.photos = false`) until the signed-URL media service (R3); account and family deletion are not offered in real mode (R5).
 
 ## R3–R7
 

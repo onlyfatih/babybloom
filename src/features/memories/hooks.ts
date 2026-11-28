@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { newRequestId } from '@/infrastructure/ids/request-id';
 import { useBackend } from '@/data/backend';
 import { queryKeys } from '@/data/query-keys';
 import { DataError, LocalPhoto, MemoryInput } from '@/data/repositories/types';
@@ -44,7 +45,7 @@ export function useSaveMemory() {
   const backend = useBackend();
   const qc = useQueryClient();
   // One idempotency key per editor instance: retries and double taps reuse it.
-  const [requestId] = useState(() => ({ current: `req-${Date.now()}-${Math.random().toString(36).slice(2)}` }));
+  const [requestId] = useState(() => ({ current: newRequestId() }));
 
   async function uploadAll(familyId: string, photos: PhotoState[], onUpdate: (next: PhotoState[]) => void): Promise<PhotoUploadResult[]> {
     let current = photos.map((p) => ({ ...p }));
@@ -75,8 +76,8 @@ export function useSaveMemory() {
     return current.map((p) => (p.status === 'uploaded' && p.mediaId ? { localId: p.photo.localId, status: 'uploaded', mediaId: p.mediaId } : { localId: p.photo.localId, status: 'failed' }));
   }
 
-  async function finalize(input: MemoryInput, memoryId?: string): Promise<Memory> {
-    const memory = await backend.memories.finalize(input, { memoryId, clientRequestId: requestId.current });
+  async function finalize(input: MemoryInput, memoryId?: string, expectedVersion?: number): Promise<Memory> {
+    const memory = await backend.memories.finalize(input, { memoryId, clientRequestId: requestId.current, expectedVersion });
     await qc.invalidateQueries({ queryKey: queryKeys.memories(input.familyId) });
     qc.setQueryData(queryKeys.memory(memory.id), memory);
     return memory;

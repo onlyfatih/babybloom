@@ -102,6 +102,7 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
         mediaIds: [...existingPhotos.map((p) => p.mediaId), ...mediaIds],
       },
       existing?.id,
+      existing?.version,
     );
     // The memory is saved from here on. A failed draft cleanup must not turn
     // that into "not saved"; it only earns a warning (R0-E).
@@ -172,6 +173,7 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
           />
         </View>
       ) : null}
+      {backend.capabilities.photos ? (
       <View style={{ gap: spacing.sm }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
           <Text variant="label">{t('memory.photos')}</Text>
@@ -190,6 +192,11 @@ export function MemoryEditor({ familyId, subject, existing }: { familyId: string
           addLabel={t('memory.addPhotos')}
         />
       </View>
+      ) : (
+        <Text variant="caption" color="textSecondary">
+          {t('memory.photosUnavailable')}
+        </Text>
+      )}
       <TextField label={t('memory.titleLabel')} optional placeholder={t('memory.titlePlaceholder')} value={form.title} onChangeText={(title) => setForm((f) => ({ ...f, title }))} maxLength={MAX_TITLE_LENGTH} testID="memory-title" />
       <TextField label={t('memory.bodyLabel')} placeholder={t('memory.bodyPlaceholder')} value={form.body} onChangeText={(body) => setForm((f) => ({ ...f, body }))} multiline error={showErrors && errors.includes('empty') ? errorText('empty') : null} testID="memory-body" />
       <DateField

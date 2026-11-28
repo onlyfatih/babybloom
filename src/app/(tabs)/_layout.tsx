@@ -20,7 +20,7 @@ function tab(icon: IconName, activeIcon: IconName) {
 export default function TabsLayout() {
   const session = useSession();
   const insets = useSafeAreaInsets();
-  if (!session.isLoading && !session.data) return <Redirect href="/onboarding" />;
+  if (!session.isLoading && !session.data) return <Redirect href="/" />;
   return (
     <Tabs
       screenOptions={{

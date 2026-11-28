@@ -3,16 +3,17 @@ import { useState } from 'react';
 import { t } from '@/content/localization';
 import { errorMessage } from '@/data/errors';
 import { ChildDraftErrors, ChildForm, emptyChildDraft, useCreateChild, validateChildDraft } from '@/features/children';
-import { useEnsureFamily } from '@/features/onboarding';
-import { useSelectProfile } from '@/features/profiles';
+import { useProfileOnboarding } from '@/features/onboarding';
+import { newRequestId } from '@/infrastructure/ids/request-id';
 import { useToday } from '@/features/shared/use-today';
 import { Banner, Button, Screen } from '@/ui/primitives';
 
 export default function ChildOnboarding() {
   const today = useToday();
-  const ensureFamily = useEnsureFamily();
+  const onboarding = useProfileOnboarding();
   const create = useCreateChild();
-  const select = useSelectProfile();
+  // One id per form: a retried submit after a lost response never creates a second child.
+  const [requestId] = useState(newRequestId);
   const [draft, setDraft] = useState(() => emptyChildDraft());
   const [errors, setErrors] = useState<ChildDraftErrors>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -22,9 +23,9 @@ export default function ChildOnboarding() {
     setErrors(errs);
     if (!input) return;
     try {
-      const session = await ensureFamily(t('onboarding.defaultRelationship'));
-      const child = await create.mutateAsync({ ...input, familyId: session.family.id, originPregnancyId: null });
-      await select.mutateAsync({ kind: 'child', childId: child.id });
+      const { familyId, userId } = await onboarding.ensureFamily();
+      const child = await create.mutateAsync({ ...input, familyId, originPregnancyId: null, requestId });
+      await onboarding.finish(userId, { kind: 'child', childId: child.id });
       router.dismissAll();
       router.replace('/(tabs)');
     } catch (e) {

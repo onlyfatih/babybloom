@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSessionApi } from '@/features/session';
 import { useBackend } from '@/data/backend';
 import { queryKeys } from '@/data/query-keys';
 import type { Child, Pregnancy, ProfileRef } from '@/domain/model';
@@ -6,12 +7,22 @@ import type { SessionInfo } from '@/data/repositories/types';
 
 export type Profile = { kind: 'pregnancy'; ref: ProfileRef; pregnancy: Pregnancy } | { kind: 'child'; ref: ProfileRef; child: Child };
 
-export function useSession() {
-  const backend = useBackend();
-  return useQuery({ queryKey: queryKeys.session, queryFn: () => backend.auth.getSession(), staleTime: Infinity });
+/**
+ * The signed-in user's current family membership, derived from the session
+ * state machine (SessionProvider). `data` is undefined while bootstrapping and
+ * null when there is no family to show (signed out, choosing a family, error).
+ */
+export function useSession(): { data: SessionInfo | null | undefined; isLoading: boolean; isPending: boolean } {
+  const { state } = useSessionApi();
+  if (state.kind === 'bootstrapping') return { data: undefined, isLoading: true, isPending: true };
+  const data: SessionInfo | null =
+    state.kind === 'ready' || state.kind === 'authenticated-with-family-without-profile'
+      ? { user: state.current.user, family: state.current.family, membership: state.current.membership }
+      : null;
+  return { data, isLoading: false, isPending: false };
 }
 
-/** Use inside the tab area, where a session is guaranteed by the root redirect. */
+/** Use inside the tab area, where a session is guaranteed by the route guards. */
 export function useRequiredSession(): SessionInfo {
   const { data } = useSession();
   if (!data) throw new Error('useRequiredSession called without a session');
@@ -76,10 +87,4 @@ export function useSelectProfile() {
 export function profileName(p: Profile | null, fallback: string): string {
   if (!p) return fallback;
   return p.kind === 'child' ? p.child.name : p.pregnancy.nickname || fallback;
-}
-
-/** Replaces the cached session and drops every other cached query (switching family/user). */
-export function resetCacheToSession(qc: ReturnType<typeof useQueryClient>, session: SessionInfo | null) {
-  qc.removeQueries({ predicate: (q) => q.queryKey[0] !== 'session' });
-  qc.setQueryData(queryKeys.session, session);
 }

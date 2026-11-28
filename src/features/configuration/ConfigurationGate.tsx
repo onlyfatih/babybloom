@@ -9,12 +9,9 @@ import { colors, spacing } from '@/ui/tokens';
 /**
  * Blocks the app when the build configuration is invalid (R1). It never falls
  * back to the demo backend. Error details are shown only outside production.
- *
- * Until R2 connects the screens to Supabase, a valid `supabase` configuration
- * also stops here, stating that plainly instead of showing demo data.
  */
 export function ConfigurationGate({ children }: { children: ReactNode }) {
-  const allowed = configResult.ok && configResult.config.backend === 'demo';
+  const allowed = configResult.ok;
   useEffect(() => {
     if (!allowed) SplashScreen.hideAsync().catch(() => undefined);
   }, [allowed]);
@@ -24,7 +21,7 @@ export function ConfigurationGate({ children }: { children: ReactNode }) {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }} contentContainerStyle={{ padding: spacing.xl, gap: spacing.lg, paddingTop: 96 }}>
       <Text variant="title">{t('config.title')}</Text>
-      <Text color="textSecondary">{configResult.ok ? t('config.backendNotConnected') : t('config.invalid')}</Text>
+      <Text color="textSecondary">{t('config.invalid')}</Text>
       {showDetails ? (
         <View style={{ gap: spacing.sm }}>
           {details.map((d) => (

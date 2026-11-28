@@ -155,6 +155,7 @@ export const demoControls = {
 
 const rawDemoBackend: Backend = {
   name: 'demo-local',
+  capabilities: { photos: true },
 
   auth: {
     async getSession() {

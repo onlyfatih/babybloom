@@ -79,11 +79,16 @@ export interface NewChildInput {
 
 export interface ProfileRepository {
   list(familyId: Id): Promise<{ pregnancies: Pregnancy[]; children: Child[] }>;
-  createPregnancy(input: NewPregnancyInput): Promise<Pregnancy>;
+  createPregnancy(input: NewPregnancyInput, options?: { requestId: string }): Promise<Pregnancy>;
   updatePregnancy(id: Id, patch: Partial<Pick<Pregnancy, 'nickname' | 'clinicianDueDate' | 'lastMenstrualPeriod' | 'status' | 'remindersPaused' | 'contentHidden'>>): Promise<Pregnancy>;
-  createChild(input: NewChildInput): Promise<Child>;
-  /** Atomic server-side: marks pregnancy born, creates children linked by originPregnancyId. Memories are untouched. */
-  recordBirth(pregnancyId: Id, children: Omit<NewChildInput, 'familyId' | 'originPregnancyId'>[]): Promise<Child[]>;
+  /** Atomic with birth measurements. `requestId` makes retries return the same child. */
+  createChild(input: NewChildInput, options?: { requestId?: string }): Promise<Child>;
+  /**
+   * Atomic server-side: marks pregnancy born, creates children linked by
+   * originPregnancyId. Memories are untouched. Pass the same `requestId` when
+   * retrying the same submission; a different request after birth is refused.
+   */
+  recordBirth(pregnancyId: Id, children: Omit<NewChildInput, 'familyId' | 'originPregnancyId'>[], options?: { requestId?: string }): Promise<Child[]>;
 }
 
 export interface LocalPhoto {
@@ -120,7 +125,7 @@ export interface MemoryRepository {
   /** Stage 2: upload one photo. Rejects with DataError('upload-failed'). */
   uploadPhoto(slot: UploadSlot, photo: LocalPhoto, onProgress: (fraction: number) => void): Promise<void>;
   /** Stage 3: create or update the memory referencing only uploaded media. Idempotent per clientRequestId. */
-  finalize(input: MemoryInput, options: { memoryId?: Id; clientRequestId: string }): Promise<Memory>;
+  finalize(input: MemoryInput, options: { memoryId?: Id; clientRequestId: string; expectedVersion?: number }): Promise<Memory>;
   /** Deletes the memory row and its media objects. */
   remove(id: Id): Promise<{ deletedMediaIds: Id[] }>;
   /** Resolves a renderable source (signed URL / local asset) for a media id. */
@@ -140,6 +145,13 @@ export interface MeasurementRepository {
   listForChild(childId: Id): Promise<GrowthMeasurement[]>;
   create(input: NewMeasurementInput): Promise<GrowthMeasurement>;
   remove(id: Id): Promise<void>;
+}
+
+export interface MeasurementCorrection {
+  canonicalValue: number;
+  enteredUnit: MeasurementUnit;
+  measuredOn: LocalDate;
+  note?: string | null;
 }
 
 export interface AppointmentInput {
@@ -177,6 +189,8 @@ export interface PreferenceRepository {
 /** The whole data surface the app needs. One provider implements all of it. */
 export interface Backend {
   name: string;
+  /** What this provider can do today. The UI hides what is not implemented instead of pretending. */
+  capabilities: { photos: boolean };
   auth: AuthRepository;
   profiles: ProfileRepository;
   memories: MemoryRepository;

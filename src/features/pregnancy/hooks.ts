@@ -7,7 +7,7 @@ export function useCreatePregnancy() {
   const backend = useBackend();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: NewPregnancyInput) => backend.profiles.createPregnancy(input),
+    mutationFn: ({ requestId, ...input }: NewPregnancyInput & { requestId?: string }) => backend.profiles.createPregnancy(input, requestId ? { requestId } : undefined),
     onSuccess: (p) => qc.invalidateQueries({ queryKey: queryKeys.profiles(p.familyId) }),
   });
 }

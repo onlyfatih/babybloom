@@ -3,54 +3,12 @@
  * SessionController) against the local stack, signing in with real email
  * codes captured by the local mail catcher (Mailpit).
  */
-import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'node:crypto';
 import { createSupabaseSessionBackend } from '@/data/providers/supabase/session-backend';
 import { SessionController } from '@/data/session/session-controller';
 import type { SessionState } from '@/data/session/session-state';
+import { appClient, latestCode, messageIds, signInWithCode } from './app-client';
 import { child, cleanup, familyOf, invite, newUser, ok, sql } from './harness';
-
-/** A per-"device" key-value store, so a new client can restore the session like a relaunch. */
-function deviceStorage() {
-  const m = new Map<string, string>();
-  return { getItem: async (k: string) => m.get(k) ?? null, setItem: async (k: string, v: string) => void m.set(k, v), removeItem: async (k: string) => void m.delete(k) };
-}
-function appClient(storage = deviceStorage()) {
-  const client = createClient(process.env.API_URL!, process.env.PUBLISHABLE_KEY!, {
-    auth: { storage, persistSession: true, autoRefreshToken: false, detectSessionInUrl: false },
-  });
-  return { client, storage };
-}
-
-async function messageIds(email: string): Promise<string[]> {
-  const res = await fetch(`${process.env.MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`);
-  const body = (await res.json()) as { messages: { ID: string }[] | null };
-  return (body.messages ?? []).map((m) => m.ID);
-}
-
-/** Waits for a code mail that was not in `seen` (so a second request never reads the first code). */
-async function latestCode(email: string, seen: string[] = []): Promise<string> {
-  for (let i = 0; i < 30; i++) {
-    const fresh = (await messageIds(email)).filter((id) => !seen.includes(id));
-    if (fresh.length) {
-      const msg = (await (await fetch(`${process.env.MAILPIT_URL}/api/v1/message/${fresh[0]!}`)).json()) as { Text: string; HTML: string };
-      const code = /(\d{6})/.exec(msg.Text || msg.HTML)?.[1];
-      if (code) return code;
-    }
-    await new Promise((r) => setTimeout(r, 200));
-  }
-  throw new Error(`no code mail for ${email}`);
-}
-
-async function signInWithCode(email: string, device = appClient()) {
-  const backend = createSupabaseSessionBackend(device.client);
-  const seen = await messageIds(email);
-  if (seen.length) await new Promise((r) => setTimeout(r, 1100)); // per-address resend limit (config.toml max_frequency)
-  await backend.identity.requestEmailCode(email);
-  const code = await latestCode(email, seen);
-  await backend.identity.verifyEmailCode(email, code);
-  return { backend, device };
-}
 
 const created: string[] = [];
 afterAll(async () => {
